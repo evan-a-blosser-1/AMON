@@ -14,10 +14,11 @@ target = C.apophis()
 ################### Simulation Settings <<<<<<<<<<<<<<<<<<<<<<<<<<
 # Turn on/off the OCSER CPU count (1/0): uses half cpu count of PC if 0
 OCSER_CPU = 1
-#
+# Asteroid name
 aster    = 'Apophis'
+# data path
 datpth   = 'Databank/'  
-Data_PATH = 'TriApop_NewCM_EOMchange/'
+###
 # Hill Sphere (km)
 esc_lim = 34.0
 # Rotation Rate (rev/hr)
@@ -48,9 +49,9 @@ dN = round((end_t - str_t )/dt)
 Time = np.linspace(start=str_t, stop=end_t, num=dN)
 ###################################################
 # Create a directory to save the data
-isExist = os.path.exists(Data_PATH)
+isExist = os.path.exists(datpth)
 if not isExist:
-    os.mkdir(Data_PATH)
+    os.mkdir(datpth)
 ###########################################################
 ################################################ Load files
 R_eff  = target.Re
@@ -74,9 +75,9 @@ Poly_CM = mesh.center_mass
 ###########################################################
 # Smap Files
 ###########################################################
-Bound_File  = Data_PATH +  "Smap_Bound_Events"  + '.dat'
-Crash_File  = Data_PATH +  "Smap_Crash_Events"  + '.dat'
-Escape_File = Data_PATH +  "Smap_Escape_Events" + '.dat'
+Bound_File  = datpth +  "Smap_Bound_Events"  + '.dat'
+Crash_File  = datpth +  "Smap_Crash_Events"  + '.dat'
+Escape_File = datpth +  "Smap_Escape_Events" + '.dat'
 ################################################################
 #################################################################
 def EOM_MASCON(Time,a,CM,Poly_CM,mu_I, omega, Ham):
@@ -278,7 +279,7 @@ def solve_orbit(task):
     #############################
     # Poincare Section
     if ps_svflg == 1:
-        file1 = Data_PATH  + 'PY-S'+ aux0 + '-H' + aux1 + 'Yi' + aux2 + '.dat'
+        file1 = datpth  + 'PY-S'+ aux0 + '-H' + aux1 + 'Yi' + aux2 + '.dat'
         # print (it, state[9, it], xa[1], state[9, it]*xa[1])
         # if y == y0:
         # Test if the file alreay exists.
@@ -294,7 +295,7 @@ def solve_orbit(task):
     # Traj 
     if tr_svflg == 1:
         # file name
-        file2 = Data_PATH  + 'TR-S'+ aux0 + '-H' + aux1 + 'Yi' + aux2 + '.dat'
+        file2 = datpth  + 'TR-S'+ aux0 + '-H' + aux1 + 'Yi' + aux2 + '.dat'
         # Save first part of the trajectory
         T_orb = round(2 * np.pi * np.sqrt(a0[1]**3/mu))
         aux_state = np.transpose(state[:, :T_orb])
@@ -352,7 +353,7 @@ if __name__ == "__main__":
     End_Time = time.time()
     Calculated_In = End_Time - Start_Time   
     #print(f"Elapsed Time: {Calculated_In} seconds")
-    Time_File_Name = Data_PATH + "_execution_time_" + '.dat'
+    Time_File_Name = datpth + "_execution_time_" + '.dat'
     with open(Time_File_Name, mode='w') as file:
         file.write(str(Calculated_In) + ' (sec)')
 
