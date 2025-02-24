@@ -9,11 +9,12 @@ sys.dont_write_bytecode = True
 import constants as C
 const  = C.constants()
 target = C.apophis()
+from equations import v_calc
 ##################################################################
 ##################################################################
 ################### Simulation Settings <<<<<<<<<<<<<<<<<<<<<<<<<<
 # Turn on/off the OCSER CPU count (1/0): uses half cpu count of PC if 0
-OCSER_CPU = 1
+OCSER_CPU = 0
 # Asteroid name
 aster    = 'Apophis'
 # data path
@@ -54,17 +55,21 @@ if not isExist:
     os.mkdir(datpth)
 ###########################################################
 ################################################ Load files
+if OCSER_CPU == 1:
+    obj_Path = '/home/eablosser/Apophis/' + aster + '.obj' 
+    CM_Path = '/home/eablosser/Apophis/'+  aster + '_CM.in' 
+    mu_Path = '/home/eablosser/Apophis/'+  aster + '_mu.in'
+else:
+    obj_Path =  aster + '.obj' 
+    CM_Path =   aster + '_CM.in' 
+    mu_Path =   aster + '_mu.in'
 R_eff  = target.Re
 Gamma  = target.gamma
-# object file
-obj_Path = '/home/eablosser/Apophis/' + aster + '.obj' 
 # MASCONs (tetrahedron center of masses)
-CM_Path = '/home/eablosser/Apophis/'+  aster + '_CM.in' 
 CM = np.loadtxt(CM_Path, delimiter=' ',dtype=float)
 Terta_Count = len(CM)
 ########################################
 # Gravitational Parameter of each MASCON
-mu_Path = '/home/eablosser/Apophis/'+  aster + '_mu.in'
 mu_I = np.loadtxt(mu_Path, delimiter=' ')
 mu = np.sum(mu_I)
 # Polyhedron Center of Mass
@@ -115,36 +120,15 @@ def EOM_MASCON(Time,a,CM,Poly_CM,mu_I, omega, Ham):
     ###
     dadt  = [dxdt,dydt,dzdt,dvxdt,dvydt,dvzdt]
     return dadt 
-################################################
-################################################
-# page 7 paragraph 2
-# " We distributed our initial conditions in the y-axis, with x0 = z0 = y_dot_0 = z_dot_0 =
-#  0 and x_dot_ 0 was computed according to Eq. 1." 
-def v_calc(Ham,omega,mu_I,CM,yp):
-    U = np.zeros(1, dtype="float64")
-    for it in range(len(CM)):
-        x = 0  - CM[it,0]
-        y = yp - CM[it,1]
-        z = 0  - CM[it,2]
-        r = np.sqrt(x**2 + y**2 + z**2) 
-        U += mu_I[it]/r
-    #########################
-    psu = U[0]
-    centri = (omega**2)*(y**2)
-    # print(f"Omega: {omega} rad/s")
-    # print(f"Ham:      {Ham} (km^2/s^2) ")
-    # print(f"Psuedo:   {psu} (km^2/s^2) ")
-    # print(f"Centrifu: {centri} (km^2/s^2) ")
-    arg = 2*Ham + centri + 2*psu
-    if arg > 0:
-        V = np.sqrt(arg)
-    return V
+
 ################################################
 ################# Events
 ###############################################
 def collision(Time, a, CN, Poly_CM, mu_I, omega, Ham):
     global cond, critical 
     ###
+    # Initialize
+    cond = 0
     pnt_coord = np.array([a[0],a[1],a[2]])
     r_mag = np.linalg.norm(pnt_coord)
     ###
@@ -168,6 +152,8 @@ collision.terminal  = True
 def escape(Time, a, CN, Poly_CM, mu_I, omega, Ham):
     global cond, critical
     ###
+    # Initialize
+    cond = 0
     r_mag = np.linalg.norm(a[0:3])
     if r_mag >= esc_lim:
         cond = 9
@@ -223,6 +209,8 @@ def poincare(state,sv_file):
 ###
 def solve_orbit(task):
     Time, a0, CM, Poly_CM, mu_I, omega, Ham = task
+    print(f"Solving orbit for y0 = {a0[1]} and Ham = {Ham}")
+    #
     sol = solve_ivp(
             fun=EOM_MASCON,           
             t_span=[Time[0], Time[-1]],           
