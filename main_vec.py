@@ -18,14 +18,14 @@ OCSER_CPU = 0
 # Asteroid name
 aster    = 'Apophis'
 # data path
-datpth   = 'Databank/Run_Test/'  
+datpth   = 'Databank/Run_Test_vec/'  
 ###
 # Hill Sphere (km)
 esc_lim = 34.0
 # Rotation Rate (rev/hr)
 T = 30.5
 ###
-# Save Poincare & Traj on/off (1/0)
+# Save Poincare & TRaj on/off (1/0)
 ps_svflg = 1
 tr_svflg = 1
 sm_svflg = 0
@@ -91,9 +91,12 @@ def EOM_MASCON(Time,a,CM,Poly_CM,mu_I, omega, Ham):
     dydt = vy
     dzdt = vz
     #########
-    Ux = np.zeros(1,dtype="float64")
-    Uy = np.zeros(1,dtype="float64")
-    Uz = np.zeros(1,dtype="float64")
+    # Vectorized
+    # Initialize acceleration arrays
+    k = a.shape[1] if len(a.shape) > 1 else 1
+    Ux = np.zeros(k,dtype="float64")
+    Uy = np.zeros(k,dtype="float64")
+    Uz = np.zeros(k,dtype="float64")
     for it in range(len(CM)):
         R_x = CM[it,0] - Poly_CM[0]
         R_y = CM[it,1] - Poly_CM[1]
@@ -118,8 +121,9 @@ def EOM_MASCON(Time,a,CM,Poly_CM,mu_I, omega, Ham):
     dvydt = omega**2*y - 2*omega*vx + Uy[0]
     dvzdt = Uz[0]
     ###
-    dadt  = [dxdt,dydt,dzdt,dvxdt,dvydt,dvzdt]
-    return dadt 
+    return np.vstack([dxdt, dydt, dzdt, dvxdt, dvydt, dvzdt])
+
+
 ################################################
 def poincare(state,sv_file):
     nt = state.shape[1] -1
@@ -219,10 +223,12 @@ def solve_orbit(task):
             events=[collision, escape],
             method='LSODA',     
             first_step=dt,
+            t_eval=Time,
+            min_step=dt, 
+            max_step=dt*2,  
             rtol=1e-10,
             atol=1e-12,             
-            t_eval=Time,  
-            max_step=np.inf                     
+            vectorized=True,
     )
     ###
     state = sol.y 
@@ -334,11 +340,8 @@ if __name__ == "__main__":
     ###################### Solve orbits using multiprocessing #######################
     #
     Start_Time = time.time()
-    
     with multiprocessing.Pool(processes=CPU_COUNT) as pool:
         results = pool.map(solve_orbit, tasks)
-        
-        
     End_Time = time.time()
     Calculated_In = End_Time - Start_Time   
     #print(f"Elapsed Time: {Calculated_In} seconds")
