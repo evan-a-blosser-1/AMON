@@ -25,7 +25,7 @@ esc_lim = 34.0
 # Rotation Rate (rev/hr)
 T = 30.5
 ###
-# Save Poincare & TRaj on/off (1/0)
+# Save Poincare & Traj on/off (1/0)
 ps_svflg = 1
 tr_svflg = 1
 sm_svflg = 0
@@ -336,8 +336,11 @@ if __name__ == "__main__":
     ###################### Solve orbits using multiprocessing #######################
     #
     Start_Time = time.time()
+    
     with multiprocessing.Pool(processes=CPU_COUNT) as pool:
         results = pool.map(solve_orbit, tasks)
+        
+        
     End_Time = time.time()
     Calculated_In = End_Time - Start_Time   
     #print(f"Elapsed Time: {Calculated_In} seconds")
