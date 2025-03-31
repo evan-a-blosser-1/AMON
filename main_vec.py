@@ -27,11 +27,11 @@ T = 30.5
 ###
 # Save Poincare & TRaj on/off (1/0)
 ps_svflg = 1
-tr_svflg = 1
+tr_svflg = 0
 sm_svflg = 0
 ###
-y0 = 0.5
-yf = 4.0
+y0 = 1.0
+yf = 1.0
 dy = 0.1
 ###
 H0 = 1.6e-9
@@ -40,7 +40,7 @@ dH = 0.1e-9
 ###########
 str_t = 0.0
 dt    = 1.0
-days  = 360.0
+days  = 0.01
 ########################
 ########################
 omega = 2.0*np.pi/(T*3600.0)
@@ -121,7 +121,7 @@ def EOM_MASCON(Time,a,CM,Poly_CM,mu_I, omega, Ham):
     dvydt = omega**2*y - 2*omega*vx + Uy[0]
     dvzdt = Uz[0]
     ###
-    return np.vstack([dxdt, dydt, dzdt, dvxdt, dvydt, dvzdt])
+    return np.hstack([dxdt, dydt, dzdt, dvxdt, dvydt, dvzdt])
 
 
 ################################################
@@ -224,8 +224,8 @@ def solve_orbit(task):
             method='LSODA',     
             first_step=dt,
             t_eval=Time,
-            min_step=dt, 
-            max_step=dt*2,  
+            min_step=dt*1e-3, 
+            max_step=dt,  
             rtol=1e-10,
             atol=1e-12,             
             vectorized=True,

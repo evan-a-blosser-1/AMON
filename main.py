@@ -30,8 +30,8 @@ ps_svflg = 1
 tr_svflg = 1
 sm_svflg = 0
 ###
-y0 = 0.5
-yf = 4.0
+y0 = 1.0
+yf = 1.0
 dy = 0.1
 ###
 H0 = 1.6e-9
@@ -40,7 +40,7 @@ dH = 0.1e-9
 ###########
 str_t = 0.0
 dt    = 1.0
-days  = 360.0
+days  = 0.01
 ########################
 ########################
 omega = 2.0*np.pi/(T*3600.0)
@@ -86,6 +86,7 @@ Escape_File = datpth +  "Smap_Escape_Events" + '.dat'
 ################################################################
 #################################################################
 def EOM_MASCON(Time,a,CM,Poly_CM,mu_I, omega, Ham):
+    print(f"Time = {Time}")
     x,y,z,vx,vy,vz = a
     dxdt = vx
     dydt = vy
@@ -221,8 +222,9 @@ def solve_orbit(task):
             first_step=dt,
             rtol=1e-10,
             atol=1e-12,             
-            t_eval=Time,  
-            max_step=np.inf                     
+            t_eval=Time, 
+            min_step=dt*1e-3, 
+            max_step=dt                     
     )
     ###
     state = sol.y 
@@ -308,7 +310,7 @@ tasks = []
 if OCSER_CPU == 1:
     CPU_COUNT = int(os.getenv("SLURM_CPUS_PER_TASK"))
 else:
-    CPU_COUNT = int(multiprocessing.cpu_count()/2)
+    CPU_COUNT = int(1)
 ###############################################################################
 ########################### Parallel processing ###############################
 if __name__ == "__main__":
@@ -341,7 +343,7 @@ if __name__ == "__main__":
         
     End_Time = time.time()
     Calculated_In = End_Time - Start_Time   
-    #print(f"Elapsed Time: {Calculated_In} seconds")
+    print(f"Elapsed Time: {Calculated_In} seconds")
     Time_File_Name = datpth + "_execution_time_" + '.dat'
     with open(Time_File_Name, mode='w') as file:
         file.write(str(Calculated_In) + ' (sec)')
