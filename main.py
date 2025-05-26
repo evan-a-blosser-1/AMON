@@ -94,7 +94,7 @@ Escape_File = datpth +  "Smap_Escape_Events" + '.dat'
 ################################################################
 #################################################################
 def EOM_MASCON(Time,a,CM,Poly_CM,mu_I, omega, Ham):
-    print(f"Time = {Time}")
+    # print(f"Time = {Time}")
     x,y,z,vx,vy,vz = a
     dxdt = vx
     dydt = vy
