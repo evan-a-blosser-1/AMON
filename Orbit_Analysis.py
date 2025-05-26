@@ -15,10 +15,10 @@ Spin = 30.5
 # 
 omega = (2*np.pi)/(Spin * 3600)
 
-folder   = "Databank/OG_2/" 
+folder   = "Databank/OG_6/" 
 ########
-xi = 0.5
-xf = 0.5
+xi = 0.75
+xf = 0.75
 dx = 0.01
 nx = round((xf - xi)/dx)
 ########################
@@ -54,8 +54,8 @@ def Poincare (state):
     nt = state.shape[1] - 1
     # global CJ, x0, vy0
     xa = np.zeros(6)
-    xm = np.zeros(6)
-    # xm = np.zeros((6,nt))
+    # xm = np.zeros(6)
+    xm = np.zeros((6,nt))
 
     xa[0] = state[0, 0]
     xa[1] = state[1, 0]
@@ -82,21 +82,21 @@ def Poincare (state):
             # print('----------------------------')
             #####
             # Fill matrix of points 
-            # xm[0,it] = (state[0, it] + xa[0])/2.0
-            # xm[1,it] = (state[1, it] + xa[1])/2.0
-            # xm[2,it] = (state[2, it] + xa[2])/2.0
-            # xm[3,it] = (state[3, it] + xa[3])/2.0
-            # xm[4,it] = (state[4, it] + xa[4])/2.0
-            # xm[5,it] = (state[5, it] + xa[5])/2.0
+            xm[0,it] = (state[0, it] + xa[0])/2.0
+            xm[1,it] = (state[1, it] + xa[1])/2.0
+            xm[2,it] = (state[2, it] + xa[2])/2.0
+            xm[3,it] = (state[3, it] + xa[3])/2.0
+            xm[4,it] = (state[4, it] + xa[4])/2.0
+            xm[5,it] = (state[5, it] + xa[5])/2.0
             #####
             # Single Point
-            xm[0] = (state[0, it] + xa[0])/2.0
-            xm[1] = (state[1, it] + xa[1])/2.0
-            xm[2] = (state[2, it] + xa[2])/2.0
-            xm[3] = (state[3, it] + xa[3])/2.0
-            xm[4] = (state[4, it] + xa[4])/2.0
-            xm[5] = (state[5, it] + xa[5])/2.0
-            ax.plot(xm[1], xm[4], 'r.')
+            # xm[0] = (state[0, it] + xa[0])/2.0
+            # xm[1] = (state[1, it] + xa[1])/2.0
+            # xm[2] = (state[2, it] + xa[2])/2.0
+            # xm[3] = (state[3, it] + xa[3])/2.0
+            # xm[4] = (state[4, it] + xa[4])/2.0
+            # xm[5] = (state[5, it] + xa[5])/2.0
+            # ax.plot(xm[1], xm[4], 'r.')
         ##############################
         ##############################            
         # Update the sate
@@ -108,13 +108,13 @@ def Poincare (state):
         xa[4] = state[4, it]
         xa[5] = state[5, it]
     ########################
-    # print(xm)
+    print(xm)
     ##### Estimate the phase space density
-    # points = np.vstack((xm[0], xm[4]))
-    # kde = stats.gaussian_kde(points)
-    # density = kde.evaluate(points)
-    # scatter = ax.scatter(xm[1], xm[4], c=density, cmap='viridis')
-    # plt.colorbar(scatter, label='Phase Space Density')
+    points = np.vstack((xm[0], xm[4]))
+    kde = stats.gaussian_kde(points)
+    density = kde.evaluate(points)
+    scatter = ax.scatter(xm[1], xm[4], c=density, cmap='viridis')
+    plt.colorbar(scatter, label='Phase Space Density')
 
     plt.show()
 ###
