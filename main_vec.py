@@ -28,6 +28,7 @@ T = 30.5
 # Save Poincare & TRaj on/off (1/0)
 ps_svflg = 1
 tr_svflg = 0
+tr_svflg = 0
 sm_svflg = 0
 ###
 y0 = 0.95
@@ -121,7 +122,7 @@ def EOM_MASCON(Time,a,CM,Poly_CM,mu_I, omega, Ham):
     dvydt = omega**2*y - 2*omega*vx + Uy[0]
     dvzdt = Uz[0]
     ###
-    return np.vstack([dxdt, dydt, dzdt, dvxdt, dvydt, dvzdt])
+    return np.hstack([dxdt, dydt, dzdt, dvxdt, dvydt, dvzdt])
 
 
 ################################################

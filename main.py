@@ -25,7 +25,7 @@ esc_lim = 34.0
 # Rotation Rate (rev/hr)
 T = 30.5
 ###
-# Save Poincare & TRaj on/off (1/0)
+# Save Poincare & Traj on/off (1/0)
 ps_svflg = 1
 tr_svflg = 1
 sm_svflg = 0
@@ -94,6 +94,7 @@ Escape_File = datpth +  "Smap_Escape_Events" + '.dat'
 ################################################################
 #################################################################
 def EOM_MASCON(Time,a,CM,Poly_CM,mu_I, omega, Ham):
+    print(f"Time = {Time}")
     x,y,z,vx,vy,vz = a
     dxdt = vx
     dydt = vy
@@ -318,7 +319,7 @@ tasks = []
 if OCSER_CPU == 1:
     CPU_COUNT = int(os.getenv("SLURM_CPUS_PER_TASK"))
 else:
-    CPU_COUNT = int(multiprocessing.cpu_count()/2)
+    CPU_COUNT = int(1)
 ###############################################################################
 ########################### Parallel processing ###############################
 if __name__ == "__main__":
@@ -346,11 +347,14 @@ if __name__ == "__main__":
     ###################### Solve orbits using multiprocessing #######################
     #
     Start_Time = time.time()
+    
     with multiprocessing.Pool(processes=CPU_COUNT) as pool:
         results = pool.map(solve_orbit, tasks)
+        
+        
     End_Time = time.time()
     Calculated_In = End_Time - Start_Time   
-    #print(f"Elapsed Time: {Calculated_In} seconds")
+    print(f"Elapsed Time: {Calculated_In} seconds")
     Time_File_Name = datpth + "_execution_time_" + '.dat'
     with open(Time_File_Name, mode='w') as file:
         file.write(str(Calculated_In) + ' (sec)')
