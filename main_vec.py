@@ -27,11 +27,11 @@ T = 30.5
 ###
 # Save Poincare & TRaj on/off (1/0)
 ps_svflg = 1
-tr_svflg = 1
+tr_svflg = 0
 sm_svflg = 0
 ###
-y0 = 0.5
-yf = 4.0
+y0 = 0.95
+yf = 1.05
 dy = 0.1
 ###
 H0 = 1.6e-9
@@ -40,7 +40,7 @@ dH = 0.1e-9
 ###########
 str_t = 0.0
 dt    = 1.0
-days  = 360.0
+days  = 1.0
 ########################
 ########################
 omega = 2.0*np.pi/(T*3600.0)
@@ -150,7 +150,7 @@ def poincare(state,sv_file):
             ###################################
             with open(sv_file, "a") as file_PS:
                 np.savetxt(file_PS, xp, newline=' ')
-                file_PS.write(str(round(state[1,0], 5)) + ' ' + str(round(x_dot, 14)) + \
+                file_PS.write(str(round(state[1,0], 5)) + ' ' + str(round(state[3,0], 14)) + \
                     ' ' + str(round(Ham, 14)) + "\n")
             file_PS.close()
         ##############################
@@ -224,8 +224,8 @@ def solve_orbit(task):
             method='LSODA',     
             first_step=dt,
             t_eval=Time,
-            min_step=dt, 
-            max_step=dt*2,  
+            min_step=dt/200, 
+            max_step=dt,  
             rtol=1e-10,
             atol=1e-12,             
             vectorized=True,

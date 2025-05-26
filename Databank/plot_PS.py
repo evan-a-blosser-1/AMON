@@ -19,7 +19,7 @@ plt.rcParams['mathtext.fontset'] = 'cm'
 
 
 
-folder   = "Databank/RUN1/" 
+folder   = "Databank/OG_6/" 
 
 
 
@@ -30,9 +30,9 @@ xf = 2.9
 dx = 0.001
 nx = round((xf - xi)/dx)
 ########################
-Hi = 1e-7
-Hf = 1.0e-7
-dH = 0.1e-7
+Hi = 1.6e-9
+Hf = 1.6e-9
+dH = 0.1e-9
 nH = round((Hf - Hi) / dH)
 ########################
 all_z = []
@@ -44,20 +44,21 @@ for ii in range(0, nx + 1):
     for jj in range(0, nH + 1):
         H0 = Hi + float(jj)*dH
     
-        aux1 = f"{H0:.5e}"
+        aux1 = f"{H0:.1e}"
         #aux1 = f"{H0}"
         #aux1 = '0.0' 
         aux2 = str(round(x0, 5))
         
         # x0
-        file = folder + '/' + 'PY-S0' +'-H' + aux1 + 'Xi' + aux2 + '.dat'
+        # file = folder + '/' + 'PY-S0' +'-H' + aux1 + 'Xi' + aux2 + '.dat'
     
         # y0
-        # file = folder + '/' + 'PY-S0' +'-H' + aux1 + 'Yi' + aux2 + '.dat'
+        file = folder + '/' + 'PY-S0' +'-H' + aux1 + 'Yi' + aux2 + '.dat'
         
         # z0
         # file = folder + '/' + 'PY-S0' +'-H' + aux1 + 'Zi' + aux2 + '.dat'
-    
+
+        print(file)
     
         # Skip missing files
         if os.path.isfile(file) == False:

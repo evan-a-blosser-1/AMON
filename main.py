@@ -18,7 +18,7 @@ OCSER_CPU = 0
 # Asteroid name
 aster    = 'Apophis'
 # data path
-datpth   = 'Databank/Run_Test/'  
+datpth   = 'Databank/OG_6/'  
 ###
 # Hill Sphere (km)
 esc_lim = 34.0
@@ -30,8 +30,16 @@ ps_svflg = 1
 tr_svflg = 1
 sm_svflg = 0
 ###
-y0 = 0.5
-yf = 4.0
+# Exclude unnecessary
+# initial conditions 
+srt = 0.00
+end = 0.1
+exclude_List = []
+for i in np.arange(srt, end, step=0.01):
+    exclude_List.append(np.round(i,2))
+##
+y0 = 0.75
+yf = 0.76
 dy = 0.1
 ###
 H0 = 1.6e-9
@@ -40,7 +48,7 @@ dH = 0.1e-9
 ###########
 str_t = 0.0
 dt    = 1.0
-days  = 360.0
+days  = 100.0
 ########################
 ########################
 omega = 2.0*np.pi/(T*3600.0)
@@ -57,8 +65,8 @@ if not isExist:
 ################################################ Load files
 if OCSER_CPU == 1:
     obj_Path = '/home/eablosser/Apophis/' + aster + '.obj' 
-    CM_Path = '/home/eablosser/Apophis/'+  aster + '_CM.in' 
-    mu_Path = '/home/eablosser/Apophis/'+  aster + '_mu.in'
+    CM_Path  = '/home/eablosser/Apophis/' + aster + '_CM.in' 
+    mu_Path  = '/home/eablosser/Apophis/' + aster + '_mu.in'
 else:
     obj_Path =  aster + '.obj' 
     CM_Path =   aster + '_CM.in' 
@@ -121,7 +129,7 @@ def EOM_MASCON(Time,a,CM,Poly_CM,mu_I, omega, Ham):
     dadt  = [dxdt,dydt,dzdt,dvxdt,dvydt,dvzdt]
     return dadt 
 ################################################
-def poincare(state,sv_file):
+def poincare(state,sv_file,Ham):
     nt = state.shape[1] -1
     ###
     x1 = np.zeros(6)
@@ -146,7 +154,7 @@ def poincare(state,sv_file):
             ###################################
             with open(sv_file, "a") as file_PS:
                 np.savetxt(file_PS, xp, newline=' ')
-                file_PS.write(str(round(state[1,0], 5)) + ' ' + str(round(x_dot, 14)) + \
+                file_PS.write(str(round(state[1,0], 5)) + ' ' + str(round(state[3,0], 14)) + \
                     ' ' + str(round(Ham, 14)) + "\n")
             file_PS.close()
         ##############################
@@ -222,10 +230,12 @@ def solve_orbit(task):
             rtol=1e-10,
             atol=1e-12,             
             t_eval=Time,  
-            max_step=np.inf                     
+            #min_step=dt/100,
+            #max_step=dt*13 
     )
     ###
     state = sol.y 
+    
     
     ################################ Checkpoint ##########################################
     ################################
@@ -275,7 +285,7 @@ def solve_orbit(task):
             os.remove(file1)
         ############################
         #   #
-        poincare(state,file1)
+        poincare(state,file1,Ham)
         #
     #################
     # Traj 
@@ -283,9 +293,9 @@ def solve_orbit(task):
         # file name
         file2 = datpth  + 'TR-S'+ aux0 + '-H' + aux1 + 'Yi' + aux2 + '.dat'
         # Save first part of the trajectory
-        T_orb = round(2 * np.pi * np.sqrt(a0[1]**3/mu))
-        aux_state = np.transpose(state[:, :T_orb])
-        
+        # T_orb = round(2 * np.pi * np.sqrt(a0[1]**3/mu))
+        # aux_state = np.transpose(state[:, :T_orb])
+        aux_state = np.transpose(state[:, :])
         # print(aux_state.shape)
         
         isExist = os.path.exists(file2)
@@ -319,6 +329,8 @@ if __name__ == "__main__":
     # Loop through y0
     for ii in range (0, N1+1):
         y = y0 + float(ii)*dy
+        if np.round(y,2) in exclude_List:
+            continue
         # Same for energy, this one can be nested inside position
         N2 = round((Hf - H0) / dH)
         for jj in range(0, N2+1):

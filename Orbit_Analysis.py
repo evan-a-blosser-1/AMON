@@ -7,17 +7,18 @@ from matplotlib import cm
 import numpy as np
 import sys
 import trimesh
+from scipy import stats
 ###
 # Asteroid Name
 asteroid = 'Apophis'
-Spin = 30.4
+Spin = 30.5
 # 
 omega = (2*np.pi)/(Spin * 3600)
 
-folder   = "Databank/" 
+folder   = "Databank/OG_2/" 
 ########
-xi = 1.0
-xf = 1.0
+xi = 0.5
+xf = 0.5
 dx = 0.01
 nx = round((xf - xi)/dx)
 ########################
@@ -54,6 +55,8 @@ def Poincare (state):
     # global CJ, x0, vy0
     xa = np.zeros(6)
     xm = np.zeros(6)
+    # xm = np.zeros((6,nt))
+
     xa[0] = state[0, 0]
     xa[1] = state[1, 0]
     xa[2] = state[2, 0]
@@ -63,7 +66,30 @@ def Poincare (state):
     for it in range(1, nt + 1):
         ##########################################
         # Check x2*x1 < 0 & x2 > 0 for sign change
-        if state[0, it]*xa[0] < 0 and state[0, it] > 0:
+        neg_si = state[0, it]*xa[0]
+        pos_si = state[0, it]
+        #
+        if neg_si < 0.0 and pos_si > 0.0:
+            # print(f"Negative Sign Check: {neg_si:.6f}")
+            # print(f"Positive Sign Check: {pos_si:.6f}")
+            # print(f"X Position: {state[0, it]:.6f}")
+            # print(f"Y Position: {state[1, it]:.6f}")
+            # print(f"Z Position: {state[2, it]:.6f}")
+            # print(f"X Velocity: {state[3, it]:.6f}")
+            # print(f"Y Velocity: {state[4, it]:.6f}")
+            # print(f"Z Velocity: {state[5, it]:.6f}")
+            # input('| Press Enter to continue...')
+            # print('----------------------------')
+            #####
+            # Fill matrix of points 
+            # xm[0,it] = (state[0, it] + xa[0])/2.0
+            # xm[1,it] = (state[1, it] + xa[1])/2.0
+            # xm[2,it] = (state[2, it] + xa[2])/2.0
+            # xm[3,it] = (state[3, it] + xa[3])/2.0
+            # xm[4,it] = (state[4, it] + xa[4])/2.0
+            # xm[5,it] = (state[5, it] + xa[5])/2.0
+            #####
+            # Single Point
             xm[0] = (state[0, it] + xa[0])/2.0
             xm[1] = (state[1, it] + xa[1])/2.0
             xm[2] = (state[2, it] + xa[2])/2.0
@@ -82,6 +108,14 @@ def Poincare (state):
         xa[4] = state[4, it]
         xa[5] = state[5, it]
     ########################
+    # print(xm)
+    ##### Estimate the phase space density
+    # points = np.vstack((xm[0], xm[4]))
+    # kde = stats.gaussian_kde(points)
+    # density = kde.evaluate(points)
+    # scatter = ax.scatter(xm[1], xm[4], c=density, cmap='viridis')
+    # plt.colorbar(scatter, label='Phase Space Density')
+
     plt.show()
 ###
 
@@ -105,6 +139,8 @@ Terta_Count = len(CM)
 mu_Path =   asteroid + '_mu.in'
 mu_I = np.loadtxt(mu_Path, delimiter=' ')
 mu = np.sum(mu_I)
+print(f"Total Gravitational Parameter: {mu}")
+#######################################################
 # Polyhedron Center of Mass
 mesh = trimesh.load_mesh(obj_Path)
 Poly_CM = [target.Poly_x, target.Poly_y, target.Poly_z]
@@ -146,23 +182,30 @@ print(f"Faces: {f.shape}")
 col_ls = ['r', 'b', 'g', 'y', 'm', 'c', 'k']
 
 fig1 = plt.figure()
-ax1 = fig1.add_subplot(111, projection='3d')
+ax1  = fig1.add_subplot(111, projection='3d')
 ax1.set_title('Trajectory')
 ax1.set_xlabel('X (km)')
 ax1.set_ylabel('Y (km)')
 ax1.set_zlabel('Z (km)')
 
 fig2 = plt.figure()
-ax2 = fig2.add_subplot(111)
+ax2  = fig2.add_subplot(111)
 ax2.set_title('Hamiltonian Energy')
 ax2.set_xlabel('time (sec)')
 ax2.set_ylabel('Hamiltonian (km^2/s^2)')
 
 fig3 = plt.figure()
-ax3 = fig3.add_subplot(111)
-ax3.set_title(r' Velocity:  $\frac{km}{s}$')
+ax3  = fig3.add_subplot(111)
+ax3.set_title(r'Velocity')
 ax3.set_xlabel('time (sec)')
-ax3.set_ylabel(r'$\dot{y}$')
+ax3.set_ylabel(r'Velocity $\frac{km}{s}$')
+
+
+fig4 = plt.figure()
+ax4  = fig4.add_subplot(111)
+ax4.set_title(r'Position')
+ax4.set_xlabel('time (sec)')
+ax4.set_ylabel(r'Position (km)')
 
 
 
@@ -181,7 +224,7 @@ for ii in range(0, nx + 1):
         #file = folder + '/' + 'PY-C' + aux1 + 'Yi' + aux2 + '.dat'
         
                 
-        file = folder + '/' + 'TR-S1' +'-H' + aux1 + 'Yi' + aux2 + '.dat'
+        file = folder + '/' + 'TR-S0' +'-H' + aux1 + 'Yi' + aux2 + '.dat'
     
     
     
@@ -211,9 +254,6 @@ for ii in range(0, nx + 1):
         ax1.plot(x, y, z ,alpha=1, color=col)
         ax1.add_collection3d(mesh)
         ax1.set_aspect('equal', 'box') 
-        ax1.set_xlabel('X (km)')
-        ax1.set_ylabel('Y (km)')
-        ax1.set_zlabel('Z (km)')
         #####################################
         enr = Calc_Ham(ps.T, omega, mu_I, CM)
         t = np.linspace(0,ps.shape[0],ps.shape[0])
@@ -226,7 +266,10 @@ for ii in range(0, nx + 1):
         col = col_ls[(ii * (nH + 1) + jj) % len(col_ls)]
         ax2.plot(t,enr, alpha=1, color=col)
         ###
-        ax3.plot(t,ps[:,4], alpha=1, color=col)
+        vel = np.sqrt(ps[:, 3]**2 + ps[:, 4]**2 + ps[:, 5]**2)
+        ax3.plot(t,vel, alpha=1, color=col,label='Velocity')
+        r = np.sqrt(ps[:, 0]**2 + ps[:, 1]**2 + ps[:, 2]**2)
+        ax4.plot(t, r, alpha=1, color='blue',label='Position')
         ###################################
         r = np.sqrt(ps[:, 0]**2 + ps[:, 1]**2 + ps[:, 2]**2)
         r_max = np.max(r)
@@ -239,31 +282,28 @@ for ii in range(0, nx + 1):
         else:
             e = "Elliptical"
         analysis = f"""
-        {"-"*42}
-        | r_max = {r_max}
-        | r_min = {r_min}
-        | r_bar = {r_bar}
-        | e_apr = {e}
-        |--- Velocity ---
-        | max   = {ps[:,4].max()}  
-        | min   = {ps[:,4].min()}
-        | mean  = {np.mean(ps[:,4])}  +/- {np.std(ps[:,4])}
-        |----------------
-        |
-        {"-"*42}
+    {"-"*42}
+    | r_max = {r_max}
+    | r_min = {r_min}
+    | r_bar = {r_bar}
+    | e_apr = {e}
+    |--- Velocity ---
+    | max   = {ps[:,4].max()}  
+    | min   = {ps[:,4].min()}
+    | mean  = {np.mean(ps[:,4])}  +/- {np.std(ps[:,4])}
+    |----------------
+    |
+    {"-"*42}
         """
         print(analysis)
         ###
         Poincare(ps.T)
         
         ###################################
+        # Poincare Error Analysis
         
-
-# ax1.legend()
-# ############
-# ax2.set_xlabel('time (sec)')
-# ax2.set_ylabel('Hamiltonian (km^2/s^2)')
-
+        
+        ###########
         plt.show()
 
 
