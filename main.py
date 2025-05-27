@@ -18,7 +18,7 @@ OCSER_CPU = 0
 # Asteroid name
 aster    = 'Apophis'
 # data path
-datpth   = 'Databank/OG_6/'  
+datpth   = 'Databank/OG_control/'  
 ###
 # Hill Sphere (km)
 esc_lim = 34.0
@@ -38,8 +38,8 @@ exclude_List = []
 for i in np.arange(srt, end, step=0.01):
     exclude_List.append(np.round(i,2))
 ##
-y0 = 0.75
-yf = 0.76
+y0 = 2.0
+yf = 2.0
 dy = 0.1
 ###
 H0 = 1.6e-9
@@ -48,7 +48,7 @@ dH = 0.1e-9
 ###########
 str_t = 0.0
 dt    = 1.0
-days  = 100.0
+days  = 5.0
 ########################
 ########################
 omega = 2.0*np.pi/(T*3600.0)
