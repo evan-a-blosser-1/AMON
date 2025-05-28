@@ -15,10 +15,10 @@ Spin = 30.5
 # 
 omega = (2*np.pi)/(Spin * 3600)
 
-folder   = "Databank/OG_control/" 
+folder   = "Databank/OG_may27/" 
 ########
-xi = 2.0
-xf = 2.0
+xi = 1.0
+xf = 1.0
 dx = 0.01
 nx = round((xf - xi)/dx)
 ########################
@@ -115,9 +115,7 @@ def Poincare (state):
     # density = kde.evaluate(points)
     # scatter = ax.scatter(xm[1], xm[4], c=density, cmap='viridis')
     # plt.colorbar(scatter, label='Phase Space Density')
-
-    plt.show()
-###
+#####
 
 
 ########################################################
@@ -207,7 +205,21 @@ ax4.set_title(r'Position')
 ax4.set_xlabel('time (sec)')
 ax4.set_ylabel(r'Position (km)')
 
+fig5 = plt.figure()
+ax5  = fig5.add_subplot(111)
+ax5.set_title('Inertial Frame Velocity')
+ax5.set_xlabel('time (sec)')
+ax5.set_ylabel(r'Velocity $\frac{km}{s}$')
 
+fig6 = plt.figure()
+ax6  = fig6.add_subplot(111)
+ax6.set_title('Inertial Frame Position')
+ax6.set_xlabel('time (sec)')
+ax6.set_ylabel(r'Position (km)')
+
+fig7 = plt.figure()
+########################################################
+####################
 
 for ii in range(0, nx + 1):
     x0 = xi + float(ii)*dx
@@ -266,10 +278,10 @@ for ii in range(0, nx + 1):
         col = col_ls[(ii * (nH + 1) + jj) % len(col_ls)]
         ax2.plot(t,enr, alpha=1, color=col)
         ###
-        # vel = np.sqrt(ps[:, 3]**2 + ps[:, 4]**2 + ps[:, 5]**2)
-        # ax3.plot(t,vel, alpha=1, color=col,label='Velocity')
-        # r = np.sqrt(ps[:, 0]**2 + ps[:, 1]**2 + ps[:, 2]**2)
-        # ax4.plot(t, r, alpha=1, color='blue',label='Position')
+        vel = np.sqrt(ps[:, 3]**2 + ps[:, 4]**2 + ps[:, 5]**2)
+        ax3.plot(t,vel, alpha=1, color='blue',label='Rotating')
+        r = np.sqrt(ps[:, 0]**2 + ps[:, 1]**2 + ps[:, 2]**2)
+        ax4.plot(t, r, alpha=1, color='blue',label='Rotating')
         ###################################
         r = np.sqrt(ps[:, 0]**2 + ps[:, 1]**2 + ps[:, 2]**2)
         r_max = np.max(r)
@@ -305,7 +317,7 @@ for ii in range(0, nx + 1):
         #
         def rot2fix(xr, t):
             print(xr[0, 0])
-            input('| Press Enter to continue...')
+            # input('| Press Enter to continue...')
             ct = np.cos(t)
             st = np.sin(t)
 
@@ -323,18 +335,20 @@ for ii in range(0, nx + 1):
         
         inS = rot2fix(state, omega*t)
         print(inS)
-        vel = np.sqrt(inS[:,3]**2 + inS[:,4]**2 + inS[:,5]**2)
-        r = np.sqrt(inS[:,0]**2 + inS[:,1]**2 + inS[:,2]**2)
+        vel_in = np.sqrt(inS[:,3]**2 + inS[:,4]**2 + inS[:,5]**2)
+        r_in = np.sqrt(inS[:,0]**2 + inS[:,1]**2 + inS[:,2]**2)
         print(vel.shape)
         print(r.shape)
-        ax3.plot(t, vel, alpha=1, color=col, label='Velocity')
-        ax4.plot(t, r, alpha=1, color='blue', label='Position')
-        
+        ax5.plot(t, vel_in, alpha=1, color='red', label='Inertial')
+        ax6.plot(t, r_in, alpha=1, color='red', label='Inertial')
+        ####
+        ax7.plot(inS[:,0], inS[:,1], inS[:,2], alpha=0.5, color='red')
+
         ###########
         ###
         Poincare(ps.T)
 
-
+        plt.show()
 
 
 

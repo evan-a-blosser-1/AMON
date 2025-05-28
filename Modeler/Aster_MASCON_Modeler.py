@@ -53,7 +53,7 @@ Density = 1.75e12                 # kg/km^3
 ###################################
 #################################
 # OBJ File                        
-Asteroid_file = (asteroid)
+Asteroid_file = (asteroid + 'obj')
 OBJ_Data = np.loadtxt(Asteroid_file, delimiter=' ', dtype=str) 
 #################################################################
 ################################################### Constants ###

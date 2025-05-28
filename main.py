@@ -18,7 +18,7 @@ OCSER_CPU = 0
 # Asteroid name
 aster    = 'Apophis'
 # data path
-datpth   = 'Databank/OG_control/'  
+datpth   = 'Databank/OG_test/'  
 ###
 # Hill Sphere (km)
 esc_lim = 34.0
@@ -38,8 +38,8 @@ exclude_List = []
 for i in np.arange(srt, end, step=0.01):
     exclude_List.append(np.round(i,2))
 ##
-y0 = 2.0
-yf = 2.0
+y0 = 3.7
+yf = 3.7
 dy = 0.1
 ###
 H0 = 1.6e-9
@@ -172,7 +172,7 @@ def poincare(state,sv_file,Ham):
 ################################################
 ################# Events
 ###############################################
-def collision(Time, a, CN, Poly_CM, mu_I, omega, Ham):
+def collision(Time, a, CM, Poly_CM, mu_I, omega, Ham):
     global cond, critical 
     ###
     # Initialize
@@ -197,7 +197,7 @@ def collision(Time, a, CN, Poly_CM, mu_I, omega, Ham):
 collision.direction = -1
 collision.terminal  = True
 ###
-def escape(Time, a, CN, Poly_CM, mu_I, omega, Ham):
+def escape(Time, a, CM, Poly_CM, mu_I, omega, Ham):
     global cond, critical
     ###
     # Initialize
@@ -219,6 +219,8 @@ escape.terminal  = True
 def solve_orbit(task):
     Time, a0, CM, Poly_CM, mu_I, omega, Ham = task
     print(f"Solving orbit for y0 = {a0[1]} and Ham = {Ham}")
+    T_orb = round(2 * np.pi * np.sqrt(a0[1]**3/mu))
+    print(f"Orbital Period = {T_orb/86400} days")
     #
     sol = solve_ivp(
             fun=EOM_MASCON,           
