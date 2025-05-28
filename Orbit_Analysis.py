@@ -56,7 +56,7 @@ def Poincare (state):
     xa = np.zeros(6)
     # xm = np.zeros(6)
     xm = np.zeros((6,nt))
-
+    #####################
     xa[0] = state[0, 0]
     xa[1] = state[1, 0]
     xa[2] = state[2, 0]
@@ -296,8 +296,7 @@ for ii in range(0, nx + 1):
     {"-"*42}
         """
         print(analysis)
-        ###
-        Poincare(ps.T)
+
         state = ps
         ###################################
         # Translate to inertial frame 
@@ -305,30 +304,35 @@ for ii in range(0, nx + 1):
         # fixing rot2fixed frame
         #
         def rot2fix(xr, t):
-            print(xr[0])
+            print(xr[0, 0])
+            input('| Press Enter to continue...')
             ct = np.cos(t)
             st = np.sin(t)
 
-            xf = np.zeros[6]
-
-            xf[0] = xr[0]*ct - xr[1]*st
-            xf[1] = xr[1]*ct + xr[0]*st
-            xf[2] = xr[2]
-            xf[3] =-xr[0]*st - xr[4]*st + xr[3]*ct - xr[1]*ct
-            xf[4] = xr[3]*st - xr[1]*st + xr[0]*ct + xr[4]*ct
-            xf[5] = xr[5]
+            xf = np.zeros_like(xr)
+            
+            
+            xf[:, 0] = xr[:, 0]*ct - xr[:, 1]*st
+            xf[:, 1] = xr[:, 1]*ct + xr[:, 0]*st
+            xf[:, 2] = xr[:, 2]
+            xf[:, 3] =-xr[:, 0]*st - xr[:, 4]*st + xr[:, 3]*ct - xr[:, 1]*ct
+            xf[:, 4] = xr[:, 3]*st - xr[:, 1]*st + xr[:, 0]*ct + xr[:, 4]*ct
+            xf[:, 5] = xr[:, 5]
 
             return xf
         
         inS = rot2fix(state, omega*t)
-        
-        vel = np.sqrt(inS[3]**2 + inS[4]**2 + inS[5]**2)
-        r = np.sqrt(inS[0]**2 + inS[1]**2 + inS[2]**2)
+        print(inS)
+        vel = np.sqrt(inS[:,3]**2 + inS[:,4]**2 + inS[:,5]**2)
+        r = np.sqrt(inS[:,0]**2 + inS[:,1]**2 + inS[:,2]**2)
+        print(vel.shape)
+        print(r.shape)
         ax3.plot(t, vel, alpha=1, color=col, label='Velocity')
         ax4.plot(t, r, alpha=1, color='blue', label='Position')
         
         ###########
-        plt.show()
+        ###
+        Poincare(ps.T)
 
 
 
