@@ -64,14 +64,39 @@ from scipy.optimize import root     #
 from scipy.special import elliprj   #
 from scipy.special import elliprf   #
 # System Time                       #
-import time                         #
-from tqdm import tqdm               #
+import time  
+import sys
+
 # Plotting & Animation              #####################
 import matplotlib.pyplot as plt                         #
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection #
 import matplotlib.ticker as ticker                      #
 #########################################################
 
+#%% Sim Progess Bar
+
+def print_progress(current_time, total_time, bar_length=11):
+    fraction = current_time / total_time
+    block = int(round(bar_length * fraction))
+    bar = '\u25A1' * block + '-' * (bar_length - block)
+    sys.stdout.write(f'\r[{bar}] {fraction:.2%}')
+    sys.stdout.flush()
+           
+# File Handling 
+def Loading():
+    # Define the frames of the animation
+    frames = ['-', '\\', '|', '/']
+
+    # Loop to create the animation
+    while True:
+        for frame in frames:
+            # Print the frame and flush the output
+            sys.stdout.write('\r' + frame)
+            sys.stdout.flush()
+            # Delay for a short period
+            time.sleep(0.1)
+            
+            
 #%% volInt.c File Make
 
 def volInt_Input_FileMake(Asteroid_file_in, PATH_Name):
@@ -1014,6 +1039,103 @@ def MASCON_Orbit_3D(Initial_Conditions, MASCON_Choice, Center_of_mass, a, File_O
   #########################################
   return
 ############################################
+
+#%%
+
+
+def Plot_State(state,OBJ_File,gamma,Mesh_color,M_line=0.5,M_alpha=0.05):
+    ##############################################################
+    OBJ_Data = np.loadtxt(OBJ_File, delimiter=' ', dtype=str)
+    
+    # Extract vertex and face data
+    vertices = np.array([line[1:].astype(float) for line in OBJ_Data if line[0] == 'v'])
+    faces = np.array([line[1:].astype(int) for line in OBJ_Data if line[0] == 'f'])
+    # Scale vertices
+    vertices = vertices * gamma
+    # Set faces to start at index 0 instead of 1
+    faces = faces - 1
+    # Create mesh
+    mesh = Poly3DCollection([vertices[ii] for ii in faces], 
+                            edgecolor=Mesh_color,
+                            facecolors="white",
+                            linewidth=M_line,
+                            alpha=M_alpha)
+    X = state[0,:]
+    Y = state[1,:]  
+    Z = state[2,:]
+    #######################################################
+    #######################################################
+    figure3D = plt.figure()
+    ax = figure3D.add_subplot(111, projection='3d')
+    ax.add_collection3d(mesh)
+    ax.plot(X, Y, Z, label='Trajectory',color='purple')
+    ax.set_aspect('equal', 'box') 
+    ax.set_xlabel('X (km)')
+    ax.set_ylabel('Y (km)')
+    ax.set_zlabel('Z (km)')
+    return 
+
+#%% Plot 4 by 4 
+
+
+def plot_4by4(SimData):
+    # Axis limit 
+    # axes[1, 0].set_ylim([-0.05, 0.05])
+    X = SimData['Position Vec. X']
+    Y = SimData['Position Vec. Y']
+    Z = SimData['Position Vec. Z']
+    V_mag = np.sqrt(SimData['Velocity Vec. X']**2 + SimData['Velocity Vec. Y']**2 + SimData['Velocity Vec. Z']**2)
+    # Corrected subplot creation
+    fig, axes = plt.subplots(2, 2, figsize=(20, 20), subplot_kw={'projection': '3d'})
+    axis0 = axes[0, 0]
+    line_color ='#332288'
+    ############################################################################
+    # 3D Plot with V_mag as color
+    scatter = axis0.scatter(X, Y, Z, c=V_mag, cmap='cool',s=0.1)
+    cbar = fig.colorbar(scatter, ax=axis0, shrink=0.5, aspect=20)  
+    cbar.set_label(r'$V (km/s)$', fontsize=25,labelpad=20) 
+    axis0.view_init(elev=30, azim=45)   
+    axis0.set_xlabel(r'$X (km)$', fontsize=25,labelpad=20)
+    axis0.set_ylabel(r'$Y (km)$', fontsize=25,labelpad=20)
+    axis0.set_zlabel(r'$Z (km)$', fontsize=25,labelpad=25)
+    axis0.tick_params(axis='x', labelsize=20) 
+    axis0.tick_params(axis='y', labelsize=20) 
+    axis0.tick_params(axis='z', labelsize=20) 
+    ############################################################################
+    # Convert the rest of the axes back to 2D for the remaining plots
+    for ax in axes.flat[1:]:
+        ax.remove()
+    axes[0, 1] = fig.add_subplot(2, 2, 2)
+    axes[1, 0] = fig.add_subplot(2, 2, 3)
+    axes[1, 1] = fig.add_subplot(2, 2, 4)
+    # X-Y Plot
+    axes[0, 1].plot(X, Y, color=line_color,linewidth=0.05)
+    axes[0, 1].set_title("X-Y", fontsize=25)
+    axes[0, 1].set_xlabel(r'$X (km)$', fontsize=25,labelpad=20)
+    axes[0, 1].set_ylabel(r'$Y (km)$', fontsize=25,labelpad=20)
+    axes[0, 1].tick_params(axis='x', labelsize=20) 
+    axes[0, 1].tick_params(axis='y', labelsize=20) 
+    ############################################################################
+    # Y-Z Plot
+    axes[1, 0].plot(Y, Z, color=line_color,linewidth=0.05)
+    axes[1, 0].set_title("Y-Z", fontsize=25)
+    axes[1, 0].set_xlabel(r'$Y (km)$', fontsize=25,labelpad=20)
+    axes[1, 0].set_ylabel(r'$Z (km)$', fontsize=25,labelpad=20)
+    axes[1, 0].tick_params(axis='x', labelsize=20) 
+    axes[1, 0].tick_params(axis='y', labelsize=20) 
+    ############################################################################
+    # X-Z Plot
+    axes[1, 1].plot(X, Z, color=line_color,linewidth=0.05)
+    axes[1, 1].set_title("X-Z", fontsize=25)
+    axes[1, 1].set_xlabel(r'$X (km)$', fontsize=25,labelpad=20)
+    axes[1, 1].set_ylabel(r'$Z (km)$', fontsize=25,labelpad=20)
+    axes[1, 1].tick_params(axis='x', labelsize=20) 
+    axes[1, 1].tick_params(axis='y', labelsize=20) 
+    ############################################################################
+    plt.tight_layout()
+    
+    
+
 #%% Triaxial Ellipsoid Gravity Potential Check
 ###########################################################################
 #################################### Triaxial Ellipsoid Spherical Harmonics

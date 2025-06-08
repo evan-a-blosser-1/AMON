@@ -28,7 +28,6 @@ import matplotlib.pyplot as plt
 ########################################################
 #################################### Personal Packages #    
 sys.dont_write_bytecode = True
-import ASTER_Pack as AP
 import Asteroid_Package as ASTER
 #################################################################################
 #################### Settings 
