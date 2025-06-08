@@ -6,6 +6,11 @@ import numpy as np
 ###
 # Asteroid Name
 asteroid = 'Apophis'
+folder   = "Databank/OG_3.7km/" 
+aux1 = "1.6e-09"
+aux2 = "3.7"
+file1 = folder + '/' + 'TR-S0' +'-H' + aux1 + 'Yi' + aux2 + '.dat'
+data = np.loadtxt(file1, dtype=str)
 ###########################################################
 ################################################ Load files
 # object file
@@ -128,10 +133,13 @@ mesh = Poly3DCollection([v[ii] for ii in f],
                 linewidth=0.75,
                 alpha=0.0)
 
-ax.scatter(CM[:,0], CM[:,1], CM[:,2], 
-           color='cyan')
+# ax.scatter(CM[:,0], CM[:,1], CM[:,2], 
+           # color='cyan')
+           
 
 ax.add_collection3d(mesh)
+ax.plot(data[:, 0], data[:, 1], data[:, 2],
+           color='yellow', linewidth=1.5, label='Trajectory')
 ax.set_aspect('equal', 'box') 
 
 
@@ -162,4 +170,5 @@ ax.grid(False)
 ax.set_xlabel('X (km)')
 ax.set_ylabel('Y (km)')
 ax.set_zlabel('Z (km)')
+ax.set_aspect('equal', 'box') 
 plt.show()

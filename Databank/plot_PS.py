@@ -19,14 +19,14 @@ plt.rcParams['mathtext.fontset'] = 'cm'
 
 
 
-folder   = "Databank/OG_6/" 
+folder   = "Databank/Error/" 
 
 
 
 CJ = 0.0
 ########
 xi = 0.3
-xf = 2.9
+xf = 3.9
 dx = 0.001
 nx = round((xf - xi)/dx)
 ########################
@@ -66,8 +66,8 @@ for ii in range(0, nx + 1):
         # Print loaded files after skipping
         print(file)
         ps = np.loadtxt(file, dtype=float)
-        x = list(ps[:, 0])
-        y = list(ps[:, 3])
+        x = list(ps[:, 1])
+        y = list(ps[:, 4])
         z = list(ps[:, 6])
         all_z.extend(z) 
         #print(z[-1])
@@ -78,7 +78,7 @@ for ii in range(0, nx + 1):
         # closest_index = min(range(len(x)), key=lambda i: abs(x[i] - target_value))
         # print (z[closest_index])
         
-        POINCARE_Sec = plt.scatter(x, y, c=z, s=0.5, cmap='viridis',alpha=1)
+        POINCARE_Sec = plt.scatter(x, y, c=z, s=0.5, cmap='Spectral',alpha=1)
         scatter_plots.append(POINCARE_Sec)
         
 norm = plt.Normalize(min(all_z), max(all_z))

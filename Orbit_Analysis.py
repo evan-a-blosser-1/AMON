@@ -15,7 +15,7 @@ Spin = 30.5
 # 
 omega = (2*np.pi)/(Spin * 3600)
 
-folder   = "Databank/OG_may27/" 
+folder   = "Databank/poin_int/" 
 ########
 xi = 1.0
 xf = 1.0
@@ -218,6 +218,12 @@ ax6.set_xlabel('time (sec)')
 ax6.set_ylabel(r'Position (km)')
 
 fig7 = plt.figure()
+ax7  = fig7.add_subplot(111, projection='3d')
+ax7.set_title('Inertial Frame Trajectory')  
+ax7.set_xlabel('X (km)')
+ax7.set_ylabel('Y (km)')
+ax7.set_zlabel('Z (km)')
+
 ########################################################
 ####################
 
@@ -263,7 +269,7 @@ for ii in range(0, nx + 1):
         #
         #
         col = col_ls[(ii * (nH + 1) + jj) % len(col_ls)]
-        ax1.plot(x, y, z ,alpha=1, color=col)
+        ax1.plot(x, y, z ,alpha=1, color="#b2396b")
         ax1.add_collection3d(mesh)
         ax1.set_aspect('equal', 'box') 
         #####################################
@@ -346,7 +352,7 @@ for ii in range(0, nx + 1):
 
         ###########
         ###
-        Poincare(ps.T)
+        # Poincare(ps.T)
 
         plt.show()
 

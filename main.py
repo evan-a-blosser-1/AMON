@@ -2,6 +2,7 @@ import os
 import sys
 import time
 import trimesh
+from numba import njit 
 import numpy as np
 import multiprocessing
 from scipy.integrate import solve_ivp
@@ -9,7 +10,7 @@ sys.dont_write_bytecode = True
 import constants as C
 const  = C.constants()
 target = C.apophis()
-from equations import v_calc
+from equations import v_calc, Calc_Ham
 ##################################################################
 ##################################################################
 ################### Simulation Settings <<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -18,7 +19,7 @@ OCSER_CPU = 0
 # Asteroid name
 aster    = 'Apophis'
 # data path
-datpth   = 'Databank/OG_test/'  
+datpth   = 'Databank/poin_int/'  
 ###
 # Hill Sphere (km)
 esc_lim = 34.0
@@ -38,8 +39,8 @@ exclude_List = []
 for i in np.arange(srt, end, step=0.01):
     exclude_List.append(np.round(i,2))
 ##
-y0 = 3.7
-yf = 3.7
+y0 = 1.0
+yf = 1.0
 dy = 0.1
 ###
 H0 = 1.6e-9
@@ -48,7 +49,7 @@ dH = 0.1e-9
 ###########
 str_t = 0.0
 dt    = 1.0
-days  = 5.0
+days  = 13.0
 ########################
 ########################
 omega = 2.0*np.pi/(T*3600.0)
@@ -93,6 +94,7 @@ Crash_File  = datpth +  "Smap_Crash_Events"  + '.dat'
 Escape_File = datpth +  "Smap_Escape_Events" + '.dat'
 ################################################################
 #################################################################
+@njit
 def EOM_MASCON(Time,a,CM,Poly_CM,mu_I, omega, Ham):
     # print(f"Time = {Time}")
     x,y,z,vx,vy,vz = a
@@ -145,7 +147,11 @@ def poincare(state,sv_file,Ham):
     for itp in range(1, nt+1):
         ###
         # Check
-        if state[0,itp]*x1[0] < 0.0 and state[0,itp] > 0.0:
+        # right side 
+        # if state[0,itp]*x1[0] < 0.0 and state[0,itp] > 0.0:
+        # Both sides
+        if state[0,itp]*x1[0] < 0.0:
+            
             xp[0] = (state[0, itp] + x1[0])/2.0
             xp[1] = (state[1, itp] + x1[1])/2.0
             xp[2] = (state[2, itp] + x1[2])/2.0
@@ -169,6 +175,70 @@ def poincare(state,sv_file,Ham):
         x1[4] = state[4, itp]
         x1[5] = state[5, itp]
         #####################
+        
+        
+def poincare_interp(state, sv_file, Ham):
+    """ From Parker page 47 to 52 
+
+        
+    
+
+    Args:
+        state (array): State vector of the orbit
+        sv_file (string): Save file name 
+        Ham (float): Initial Hamiltonian Energy
+
+    Returns:
+        file: Poincare surface section file
+    """
+    tf = state.shape[1] - 1
+    ###
+    x1 = np.zeros(6)
+    xp = np.zeros(6)
+    ###
+    x1[0] = state[0, 0]
+    x1[1] = state[1, 0]
+    x1[2] = state[2, 0]
+    x1[3] = state[3, 0]
+    x1[4] = state[4, 0]
+    x1[5] = state[5, 0]
+    for itp in range(1, tf + 1):
+        ###
+        # x1 array is our x_1 
+        # 
+        # state[:,itp] is our x_2
+        #########################
+        if state[0, itp] * x1[0] < 0.0:
+            
+            alpha1 = Calc_Ham(state[:,itp],omega,mu_I,CM)
+            
+            alpha2 = Calc_Ham(x1,omega,mu_I,CM)
+            
+            
+            xp[0] = (alpha2/(alpha2-alpha1))*state[0, itp]  + (alpha1/(alpha1-alpha2))*x1[0]
+            xp[1] = (alpha2/(alpha2-alpha1))*state[1, itp]  + (alpha1/(alpha1-alpha2))*x1[1]
+            xp[2] = (alpha2/(alpha2-alpha1))*state[2, itp]  + (alpha1/(alpha1-alpha2))*x1[2]
+            xp[3] = (alpha2/(alpha2-alpha1))*state[3, itp]  + (alpha1/(alpha1-alpha2))*x1[3]
+            xp[4] = (alpha2/(alpha2-alpha1))*state[4, itp]  + (alpha1/(alpha1-alpha2))*x1[4]
+            xp[5] = (alpha2/(alpha2-alpha1))*state[5, itp]  + (alpha1/(alpha1-alpha2))*x1[5]
+    
+            ###################################
+            with open(sv_file, "a") as file_PS:
+                np.savetxt(file_PS, xp, newline=' ')
+                file_PS.write(str(round(state[1, 0], 5)) + ' ' + str(round(state[3, 0], 14)) + \
+                              ' ' + str(round(Ham, 14)) + "\n")
+            file_PS.close()
+        ##############################
+        ##############################
+        # Update the sate
+        # for each sign check
+        x1[0] = state[0, itp]
+        x1[1] = state[1, itp]
+        x1[2] = state[2, itp]
+        x1[3] = state[3, itp]
+        x1[4] = state[4, itp]
+        x1[5] = state[5, itp]
+    
 ################################################
 ################# Events
 ###############################################
@@ -288,8 +358,9 @@ def solve_orbit(task):
             os.remove(file1)
         ############################
         #   #
-        poincare(state,file1,Ham)
+        #poincare(state,file1,Ham)
         #
+        poincare_interp(state, file1, Ham)
     #################
     # Traj 
     if tr_svflg == 1:
@@ -322,6 +393,7 @@ if OCSER_CPU == 1:
     CPU_COUNT = int(os.getenv("SLURM_CPUS_PER_TASK"))
 else:
     CPU_COUNT = int(1)
+    # CPU_COUNT = int(multiprocessing.cpu_count() / 2 )
 ###############################################################################
 ########################### Parallel processing ###############################
 if __name__ == "__main__":
