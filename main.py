@@ -19,7 +19,7 @@ OCSER_CPU = 0
 # Asteroid name
 aster    = 'Apophis'
 # data path
-datpth   = 'Databank/poin_int/'  
+datpth   = 'Databank/poin_Sph_500day/'  
 ###
 # Hill Sphere (km)
 esc_lim = 34.0
@@ -28,7 +28,7 @@ T = 30.5
 ###
 # Save Poincare & Traj on/off (1/0)
 ps_svflg = 1
-tr_svflg = 1
+tr_svflg = 0
 sm_svflg = 0
 ###
 # Exclude unnecessary
@@ -39,9 +39,9 @@ exclude_List = []
 for i in np.arange(srt, end, step=0.01):
     exclude_List.append(np.round(i,2))
 ##
-y0 = 1.0
-yf = 1.0
-dy = 0.1
+y0 = 0.5
+yf = 4.0
+dy = 0.01
 ###
 H0 = 1.6e-9
 Hf = 1.6e-9
@@ -49,7 +49,7 @@ dH = 0.1e-9
 ###########
 str_t = 0.0
 dt    = 1.0
-days  = 13.0
+days  = 500.0
 ########################
 ########################
 omega = 2.0*np.pi/(T*3600.0)
@@ -131,6 +131,25 @@ def EOM_MASCON(Time,a,CM,Poly_CM,mu_I, omega, Ham):
     ###
     dadt  = [dxdt,dydt,dzdt,dvxdt,dvydt,dvzdt]
     return dadt 
+
+@njit
+def bdy2aprx(Time,a,CM,Poly_CM,mu_I, omega, Ham):
+    # print(f"Time = {Time}")
+    x,y,z,vx,vy,vz = a
+    dxdt = vx
+    dydt = vy
+    dzdt = vz
+    #########
+    r = np.sqrt(x**2 + y**2 + z**2)
+    #################
+    mu = np.sum(mu_I)
+    dvxdt = omega**2*x + 2*omega*vy - (mu*x)/r**3
+    dvydt = omega**2*y - 2*omega*vx - (mu*y)/r**3
+    dvzdt = - (mu*z)/r**3
+    ###
+    dadt  = [dxdt,dydt,dzdt,dvxdt,dvydt,dvzdt]
+    return dadt 
+
 ################################################
 def poincare(state,sv_file,Ham):
     nt = state.shape[1] -1
@@ -293,7 +312,7 @@ def solve_orbit(task):
     print(f"Orbital Period = {T_orb/86400} days")
     #
     sol = solve_ivp(
-            fun=EOM_MASCON,           
+            fun=bdy2aprx,           
             t_span=[Time[0], Time[-1]],           
             y0=a0,          
             args=(CM, Poly_CM, mu_I, omega, Ham),
@@ -358,9 +377,9 @@ def solve_orbit(task):
             os.remove(file1)
         ############################
         #   #
-        #poincare(state,file1,Ham)
+        poincare(state,file1,Ham)
         #
-        poincare_interp(state, file1, Ham)
+        # poincare_interp(state, file1, Ham)
     #################
     # Traj 
     if tr_svflg == 1:
@@ -392,8 +411,8 @@ tasks = []
 if OCSER_CPU == 1:
     CPU_COUNT = int(os.getenv("SLURM_CPUS_PER_TASK"))
 else:
-    CPU_COUNT = int(1)
-    # CPU_COUNT = int(multiprocessing.cpu_count() / 2 )
+    # CPU_COUNT = int(1)
+    CPU_COUNT = int(multiprocessing.cpu_count() / 2 )
 ###############################################################################
 ########################### Parallel processing ###############################
 if __name__ == "__main__":

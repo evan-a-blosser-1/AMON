@@ -18,7 +18,7 @@ plt.rcParams['mathtext.fontset'] = 'cm'
 
 
 
-folder   = "Bench_test/traj_OG_newom"
+folder   = "Databank/poin_Sph_500day/"
 
 srt = 4.03
 end = 05.0
@@ -62,7 +62,7 @@ for ii in range(0, nx + 1):
         #file = folder + '/' + 'PY-C' + aux1 + 'Yi' + aux2 + '.dat'
         
                 
-        file = folder + '/' + 'PY-S1' +'-H' + aux1 + 'Yi' + aux2 + '.dat'
+        file = folder + '/' + 'PY-S0' +'-H' + aux1 + 'Yi' + aux2 + '.dat'
     
     
         # DEBUGG
