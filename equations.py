@@ -21,7 +21,9 @@ def v_calc(Ham,omega,mu_I,CM,yp):
     # print(f"Psuedo:   {psu} (km^2/s^2) ")
     # print(f"Centrifu: {centri} (km^2/s^2) ")
     arg = 2*Ham + centri + 2*psu
-    if arg > 0:
+    if arg < 0.0:
+        V = np.nan
+    else:
         V = np.sqrt(arg)
     return V
 

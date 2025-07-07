@@ -15,7 +15,7 @@ Spin = 30.5
 # 
 omega = (2*np.pi)/(Spin * 3600)
 
-folder   = "Databank/poin_int/" 
+folder   = "Databank/OG_may27/" 
 ########
 xi = 1.0
 xf = 1.0
@@ -352,7 +352,7 @@ for ii in range(0, nx + 1):
 
         ###########
         ###
-        # Poincare(ps.T)
+        Poincare(ps.T)
 
         plt.show()
 

@@ -18,7 +18,7 @@ plt.rcParams['mathtext.fontset'] = 'cm'
 
 
 
-folder   = "Databank/poin_Sph_500day/"
+folder   = "Databank/poin_Vtest/"
 
 srt = 4.03
 end = 05.0

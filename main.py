@@ -19,7 +19,7 @@ OCSER_CPU = 0
 # Asteroid name
 aster    = 'Apophis'
 # data path
-datpth   = 'Databank/poin_Sph_500day/'  
+datpth   = 'Databank/poin_Vtest/'  
 ###
 # Hill Sphere (km)
 esc_lim = 34.0
@@ -39,8 +39,8 @@ exclude_List = []
 for i in np.arange(srt, end, step=0.01):
     exclude_List.append(np.round(i,2))
 ##
-y0 = 0.5
-yf = 4.0
+y0 = 1.0
+yf = 1.0
 dy = 0.01
 ###
 H0 = 1.6e-9
@@ -49,7 +49,7 @@ dH = 0.1e-9
 ###########
 str_t = 0.0
 dt    = 1.0
-days  = 500.0
+days  = 250.0
 ########################
 ########################
 omega = 2.0*np.pi/(T*3600.0)
@@ -169,7 +169,7 @@ def poincare(state,sv_file,Ham):
         # right side 
         # if state[0,itp]*x1[0] < 0.0 and state[0,itp] > 0.0:
         # Both sides
-        if state[0,itp]*x1[0] < 0.0:
+        if state[0,itp]*x1[0] < 0.0 and state[0,itp] > 0.0:
             
             xp[0] = (state[0, itp] + x1[0])/2.0
             xp[1] = (state[1, itp] + x1[1])/2.0
@@ -431,6 +431,9 @@ if __name__ == "__main__":
             Ham = H0 + float(jj)*dH
             # Calculate the initial velocity
             x_dot = v_calc(Ham,omega,mu_I,CM,y)
+            if np.isnan(x_dot):
+                print(f"Skipping y0 = {y} and Ham = {Ham} due to NaN velocity.")
+                continue
             # Define initial conditions for this iteration
             #      x0  y0      x_dot  y_dot 
             a0 = [ 0.0, y, 0.0, x_dot, 0.0,  0.0] 
