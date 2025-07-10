@@ -19,7 +19,7 @@ plt.rcParams['mathtext.fontset'] = 'cm'
 
 
 
-folder   = "Databank/Final/" 
+folder   = "Databank/Final_reducedEOM/" 
 
 
 

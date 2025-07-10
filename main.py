@@ -19,7 +19,7 @@ OCSER_CPU = 0
 # Asteroid name
 aster    = 'Apophis'
 # data path
-datpth   = 'Databank/Final/'  
+datpth   = 'Databank/Final_reducedEOM/'  
 ###
 # Hill Sphere (km)
 esc_lim = 34.0
@@ -106,17 +106,10 @@ def EOM_MASCON(Time,a,CM,Poly_CM,mu_I, omega, Ham):
     Uy = np.zeros(1,dtype="float64")
     Uz = np.zeros(1,dtype="float64")
     for it in range(len(CM)):
-        R_x = CM[it,0] - Poly_CM[0]
-        R_y = CM[it,1] - Poly_CM[1]
-        R_z = CM[it,2] - Poly_CM[2]
         ###
-        rho_x = a[0] - Poly_CM[0]
-        rho_y = a[1] - Poly_CM[1]
-        rho_z = a[2] - Poly_CM[2]
-        ###
-        r_x = rho_x - R_x
-        r_y = rho_y - R_y
-        r_z = rho_z - R_z
+        r_x = a[0] - CM[it,0] 
+        r_y = a[1] - CM[it,1]
+        r_z = a[2] - CM[it,2]
         ###
         vec = np.array([r_x,r_y,r_z])
         r_i = np.linalg.norm(vec)
