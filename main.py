@@ -19,7 +19,7 @@ OCSER_CPU = 0
 # Asteroid name
 aster    = 'Apophis'
 # data path
-datpth   = 'Databank/poin_Vtest/'  
+datpth   = 'Databank/Final/'  
 ###
 # Hill Sphere (km)
 esc_lim = 34.0
@@ -39,8 +39,8 @@ exclude_List = []
 for i in np.arange(srt, end, step=0.01):
     exclude_List.append(np.round(i,2))
 ##
-y0 = 1.0
-yf = 1.0
+y0 = 0.5
+yf = 4.0
 dy = 0.01
 ###
 H0 = 1.6e-9
@@ -49,7 +49,7 @@ dH = 0.1e-9
 ###########
 str_t = 0.0
 dt    = 1.0
-days  = 250.0
+days  = 500.0
 ########################
 ########################
 omega = 2.0*np.pi/(T*3600.0)
@@ -195,69 +195,6 @@ def poincare(state,sv_file,Ham):
         x1[5] = state[5, itp]
         #####################
         
-        
-def poincare_interp(state, sv_file, Ham):
-    """ From Parker page 47 to 52 
-
-        
-    
-
-    Args:
-        state (array): State vector of the orbit
-        sv_file (string): Save file name 
-        Ham (float): Initial Hamiltonian Energy
-
-    Returns:
-        file: Poincare surface section file
-    """
-    tf = state.shape[1] - 1
-    ###
-    x1 = np.zeros(6)
-    xp = np.zeros(6)
-    ###
-    x1[0] = state[0, 0]
-    x1[1] = state[1, 0]
-    x1[2] = state[2, 0]
-    x1[3] = state[3, 0]
-    x1[4] = state[4, 0]
-    x1[5] = state[5, 0]
-    for itp in range(1, tf + 1):
-        ###
-        # x1 array is our x_1 
-        # 
-        # state[:,itp] is our x_2
-        #########################
-        if state[0, itp] * x1[0] < 0.0:
-            
-            alpha1 = Calc_Ham(state[:,itp],omega,mu_I,CM)
-            
-            alpha2 = Calc_Ham(x1,omega,mu_I,CM)
-            
-            
-            xp[0] = (alpha2/(alpha2-alpha1))*state[0, itp]  + (alpha1/(alpha1-alpha2))*x1[0]
-            xp[1] = (alpha2/(alpha2-alpha1))*state[1, itp]  + (alpha1/(alpha1-alpha2))*x1[1]
-            xp[2] = (alpha2/(alpha2-alpha1))*state[2, itp]  + (alpha1/(alpha1-alpha2))*x1[2]
-            xp[3] = (alpha2/(alpha2-alpha1))*state[3, itp]  + (alpha1/(alpha1-alpha2))*x1[3]
-            xp[4] = (alpha2/(alpha2-alpha1))*state[4, itp]  + (alpha1/(alpha1-alpha2))*x1[4]
-            xp[5] = (alpha2/(alpha2-alpha1))*state[5, itp]  + (alpha1/(alpha1-alpha2))*x1[5]
-    
-            ###################################
-            with open(sv_file, "a") as file_PS:
-                np.savetxt(file_PS, xp, newline=' ')
-                file_PS.write(str(round(state[1, 0], 5)) + ' ' + str(round(state[3, 0], 14)) + \
-                              ' ' + str(round(Ham, 14)) + "\n")
-            file_PS.close()
-        ##############################
-        ##############################
-        # Update the sate
-        # for each sign check
-        x1[0] = state[0, itp]
-        x1[1] = state[1, itp]
-        x1[2] = state[2, itp]
-        x1[3] = state[3, itp]
-        x1[4] = state[4, itp]
-        x1[5] = state[5, itp]
-    
 ################################################
 ################# Events
 ###############################################
@@ -312,7 +249,8 @@ def solve_orbit(task):
     print(f"Orbital Period = {T_orb/86400} days")
     #
     sol = solve_ivp(
-            fun=bdy2aprx,           
+            fun=EOM_MASCON,
+            # fun=bdy2aprx,           
             t_span=[Time[0], Time[-1]],           
             y0=a0,          
             args=(CM, Poly_CM, mu_I, omega, Ham),
@@ -378,8 +316,6 @@ def solve_orbit(task):
         ############################
         #   #
         poincare(state,file1,Ham)
-        #
-        # poincare_interp(state, file1, Ham)
     #################
     # Traj 
     if tr_svflg == 1:
