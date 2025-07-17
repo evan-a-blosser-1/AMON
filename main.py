@@ -19,7 +19,7 @@ OCSER_CPU = 0
 # Asteroid name
 aster    = 'Apophis'
 # data path
-datpth   = 'Databank/Final_reducedEOM/'  
+datpth   = 'Databank/Test/'  
 ###
 # Hill Sphere (km)
 esc_lim = 34.0
@@ -39,8 +39,8 @@ exclude_List = []
 for i in np.arange(srt, end, step=0.01):
     exclude_List.append(np.round(i,2))
 ##
-y0 = 0.5
-yf = 4.0
+y0 = 0.95
+yf = 1.0
 dy = 0.01
 ###
 H0 = 1.6e-9
@@ -51,19 +51,13 @@ str_t = 0.0
 dt    = 1.0
 days  = 500.0
 ########################
-########################
-omega = 2.0*np.pi/(T*3600.0)
-###
-end_t   = days*const.day
-dN = round((end_t - str_t )/dt)
-Time = np.linspace(start=str_t, stop=end_t, num=dN)
 ###################################################
 # Create a directory to save the data
 isExist = os.path.exists(datpth)
 if not isExist:
     os.mkdir(datpth)
 ###########################################################
-################################################ Load files
+################################################ File Path 
 if OCSER_CPU == 1:
     obj_Path = '/home/eablosser/Apophis/' + aster + '.obj' 
     CM_Path  = '/home/eablosser/Apophis/' + aster + '_CM.in' 
@@ -72,19 +66,23 @@ else:
     obj_Path =  aster + '.obj' 
     CM_Path =   aster + '_CM.in' 
     mu_Path =   aster + '_mu.in'
-R_eff  = target.Re
-Gamma  = target.gamma
-# MASCONs (tetrahedron center of masses)
+#######################################################
+################################ Load Model & Constants 
+### Spin Rate 
+omega = 2.0*np.pi/(T*3600.0)
+### Time 
+end_t   = days*const.day
+dN = round((end_t - str_t )/dt)
+Time = np.linspace(start=str_t, stop=end_t, num=dN)
+### MASCONs (tetrahedron center of masses)
 CM = np.loadtxt(CM_Path, delimiter=' ',dtype=float)
 Terta_Count = len(CM)
-########################################
-# Gravitational Parameter of each MASCON
+### Gravitational Parameter of each MASCON
 mu_I = np.loadtxt(mu_Path, delimiter=' ')
-mu = np.sum(mu_I)
-# Polyhedron Center of Mass
+# Polyhedron Mesh
 mesh = trimesh.load_mesh(obj_Path)
+Gamma  = target.gamma
 mesh.apply_scale(Gamma)
-Poly_CM = mesh.center_mass
 ###########################################################
 ###########################################################
 # Smap Files
@@ -95,7 +93,7 @@ Escape_File = datpth +  "Smap_Escape_Events" + '.dat'
 ################################################################
 #################################################################
 @njit
-def EOM_MASCON(Time,a,CM,Poly_CM,mu_I, omega, Ham):
+def EOM_MASCON(Time,a,CM,mu_I, omega, Ham):
     # print(f"Time = {Time}")
     x,y,z,vx,vy,vz = a
     dxdt = vx
@@ -126,7 +124,7 @@ def EOM_MASCON(Time,a,CM,Poly_CM,mu_I, omega, Ham):
     return dadt 
 
 @njit
-def bdy2aprx(Time,a,CM,Poly_CM,mu_I, omega, Ham):
+def bdy2aprx(Time,a,CM,mu_I, omega, Ham):
     # print(f"Time = {Time}")
     x,y,z,vx,vy,vz = a
     dxdt = vx
@@ -191,7 +189,7 @@ def poincare(state,sv_file,Ham):
 ################################################
 ################# Events
 ###############################################
-def collision(Time, a, CM, Poly_CM, mu_I, omega, Ham):
+def collision(Time, a, CM,  mu_I, omega, Ham):
     global cond, critical 
     ###
     # Initialize
@@ -216,7 +214,7 @@ def collision(Time, a, CM, Poly_CM, mu_I, omega, Ham):
 collision.direction = -1
 collision.terminal  = True
 ###
-def escape(Time, a, CM, Poly_CM, mu_I, omega, Ham):
+def escape(Time, a, CM,  mu_I, omega, Ham):
     global cond, critical
     ###
     # Initialize
@@ -236,8 +234,9 @@ escape.terminal  = True
 ###############################################
 ###
 def solve_orbit(task):
-    Time, a0, CM, Poly_CM, mu_I, omega, Ham = task
+    Time, a0, CM,  mu_I, omega, Ham = task
     print(f"Solving orbit for y0 = {a0[1]} and Ham = {Ham}")
+    mu = np.sum(mu_I)
     T_orb = round(2 * np.pi * np.sqrt(a0[1]**3/mu))
     print(f"Orbital Period = {T_orb/86400} days")
     #
@@ -246,9 +245,9 @@ def solve_orbit(task):
             # fun=bdy2aprx,           
             t_span=[Time[0], Time[-1]],           
             y0=a0,          
-            args=(CM, Poly_CM, mu_I, omega, Ham),
+            args=(CM,  mu_I, omega, Ham),
             events=[collision, escape],
-            method='LSODA',     
+            method='DOP853',     
             first_step=dt,
             rtol=1e-10,
             atol=1e-12,             
@@ -345,6 +344,7 @@ else:
 ###############################################################################
 ########################### Parallel processing ###############################
 if __name__ == "__main__":
+
     #######################################################
     ##################### Begin Loops ##################### 
     Calc_Start_Time = time.time() 
@@ -367,7 +367,7 @@ if __name__ == "__main__":
             #      x0  y0      x_dot  y_dot 
             a0 = [ 0.0, y, 0.0, x_dot, 0.0,  0.0] 
             ###############################################################
-            tasks.append((Time, a0, CM, Poly_CM, mu_I, omega, Ham))
+            tasks.append((Time, a0, CM,  mu_I, omega, Ham))
     #################################################################################
     ###################### Solve orbits using multiprocessing #######################
     #
