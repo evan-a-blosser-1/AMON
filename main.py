@@ -6,11 +6,23 @@ from numba import njit
 import numpy as np
 import multiprocessing
 from scipy.integrate import solve_ivp
+from dataclasses import dataclass
 sys.dont_write_bytecode = True
 import constants as C
 const  = C.constants()
 target = C.apophis()
 from equations import v_calc, Calc_Ham
+######################################
+@dataclass
+class Task:
+    Time: np.ndarray
+    a0: np.ndarray
+    CM: np.ndarray
+    mu_I: np.ndarray
+    omega: float
+    Ham: float
+     
+global y0, yf, dy, H0, Hf, dH
 ##################################################################
 ##################################################################
 ################### Simulation Settings <<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -19,7 +31,7 @@ OCSER_CPU = 0
 # Asteroid name
 aster    = 'Apophis'
 # data path
-datpth   = 'Databank/Test/'  
+datpth   = 'Databank/Test3/'  
 ###
 # Hill Sphere (km)
 esc_lim = 34.0
@@ -40,7 +52,7 @@ for i in np.arange(srt, end, step=0.01):
     exclude_List.append(np.round(i,2))
 ##
 y0 = 0.95
-yf = 1.0
+yf = 1.05
 dy = 0.01
 ###
 H0 = 1.6e-9
@@ -49,7 +61,7 @@ dH = 0.1e-9
 ###########
 str_t = 0.0
 dt    = 1.0
-days  = 500.0
+days  = 700.0
 ########################
 ###################################################
 # Create a directory to save the data
@@ -344,7 +356,7 @@ else:
 ###############################################################################
 ########################### Parallel processing ###############################
 if __name__ == "__main__":
-
+    
     #######################################################
     ##################### Begin Loops ##################### 
     Calc_Start_Time = time.time() 
@@ -365,9 +377,17 @@ if __name__ == "__main__":
                 continue
             # Define initial conditions for this iteration
             #      x0  y0      x_dot  y_dot 
-            a0 = [ 0.0, y, 0.0, x_dot, 0.0,  0.0] 
+            a0 = np.array([ 0.0, y, 0.0, x_dot, 0.0,  0.0], dtype="float64")
             ###############################################################
             tasks.append((Time, a0, CM,  mu_I, omega, Ham))
+            
+            # Task.Time = Time
+            # Task.a0 = np.array(a0)
+            # Task.CM = CM
+            # Task.mu_I = mu_I
+            # Task.omega = omega
+            # Task.Ham = Ham
+            
     #################################################################################
     ###################### Solve orbits using multiprocessing #######################
     #
