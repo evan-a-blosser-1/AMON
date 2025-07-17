@@ -266,7 +266,10 @@ def solve_orbit(task):
             t_eval=Time,  
             #min_step=dt/100,
             #max_step=dt*13 
+            dense_output=True
     )
+    ###
+    
     ###
     state = sol.y 
     
@@ -339,7 +342,11 @@ def solve_orbit(task):
             np.savetxt(file_traj, aux_state)
             file_traj.close()
             # pause()
-
+    #################
+    # Delete the state variable
+    del state 
+    del sol 
+    
 ################################################
 ########################################### Main 
 # Multiprocessing
@@ -356,6 +363,7 @@ else:
 ###############################################################################
 ########################### Parallel processing ###############################
 if __name__ == "__main__":
+    #######################################################
     
     #######################################################
     ##################### Begin Loops ##################### 
