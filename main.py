@@ -19,7 +19,7 @@ OCSER_CPU = 0
 # Asteroid name
 aster    = 'Apophis'
 # data path
-datpth   = 'Databank/Test/'  
+datpth   = 'Databank/Test3/'  
 ###
 # Hill Sphere (km)
 esc_lim = 34.0
@@ -39,8 +39,8 @@ exclude_List = []
 for i in np.arange(srt, end, step=0.01):
     exclude_List.append(np.round(i,2))
 ##
-y0 = 0.95
-yf = 1.0
+y0 = 0.99
+yf = 1.03
 dy = 0.01
 ###
 H0 = 1.6e-9
@@ -254,7 +254,10 @@ def solve_orbit(task):
             t_eval=Time,  
             #min_step=dt/100,
             #max_step=dt*13 
+            dense_output=True
     )
+    ###
+    
     ###
     state = sol.y 
     
@@ -327,7 +330,11 @@ def solve_orbit(task):
             np.savetxt(file_traj, aux_state)
             file_traj.close()
             # pause()
-
+    #################
+    # Delete the state variable
+    del state 
+    del sol 
+    
 ################################################
 ########################################### Main 
 # Multiprocessing
@@ -344,7 +351,8 @@ else:
 ###############################################################################
 ########################### Parallel processing ###############################
 if __name__ == "__main__":
-
+    #######################################################
+    
     #######################################################
     ##################### Begin Loops ##################### 
     Calc_Start_Time = time.time() 
@@ -365,7 +373,7 @@ if __name__ == "__main__":
                 continue
             # Define initial conditions for this iteration
             #      x0  y0      x_dot  y_dot 
-            a0 = [ 0.0, y, 0.0, x_dot, 0.0,  0.0] 
+            a0 = np.array([ 0.0, y, 0.0, x_dot, 0.0,  0.0], dtype="float64") 
             ###############################################################
             tasks.append((Time, a0, CM,  mu_I, omega, Ham))
     #################################################################################
