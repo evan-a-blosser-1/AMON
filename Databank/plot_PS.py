@@ -19,14 +19,14 @@ plt.rcParams['mathtext.fontset'] = 'cm'
 
 
 
-folder   = "Databank/Run1/" 
+folder   = "Databank/Test3/" 
 
 
 
 CJ = 0.0
 ########
-xi = 0.5
-xf = 4.0
+xi = 0.95
+xf = 1.05
 dx = 0.01
 nx = round((xf - xi)/dx)
 ########################
