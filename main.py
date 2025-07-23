@@ -31,7 +31,7 @@ OCSER_CPU = 0
 # Asteroid name
 aster    = 'Apophis'
 # data path
-datpth   = 'Databank/Test_tr/'  
+datpth   = 'Databank/Test_CorEQ2/'  
 ###
 # Hill Sphere (km)
 esc_lim = 34.0
@@ -39,8 +39,8 @@ esc_lim = 34.0
 T = 30.5
 ###
 # Save Poincare & Traj on/off (1/0)
-ps_svflg = 0
-tr_svflg = 1
+ps_svflg = 1
+tr_svflg = 0
 sm_svflg = 0
 ###
 # Exclude unnecessary
@@ -51,8 +51,8 @@ exclude_List = []
 for i in np.arange(srt, end, step=0.01):
     exclude_List.append(np.round(i,2))
 ##
-y0 = 1.0
-yf = 1.04
+y0 = 0.5
+yf = 4.0
 dy = 0.01
 ###
 H0 = 1.6e-9
@@ -61,7 +61,7 @@ dH = 0.1e-9
 ###########
 str_t = 0.0
 dt    = 1.0
-days  = 60.0
+days  = 500.0
 ########################
 ###################################################
 # Create a directory to save the data

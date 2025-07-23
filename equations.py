@@ -8,12 +8,12 @@ import numpy as np
 def v_calc(Ham,omega,mu_I,CM,yp):
     U = np.zeros(1, dtype="float64")
     for it in range(len(CM)):
-        x = 0  - CM[it,0]
-        y = yp - CM[it,1]
-        z = 0  - CM[it,2]
-        r = np.sqrt(x**2 + y**2 + z**2) 
+        xi = 0  - CM[it,0]
+        yi = yp - CM[it,1]
+        zi = 0  - CM[it,2]
+        rho = np.sqrt(xi**2 + yi**2 + zi**2) 
         # r = np.sqrt(y**2)
-        U += mu_I[it]/r
+        U += mu_I[it]/rho
     #########################
     psu = U[0]
     centri = (omega**2)*(yp**2)
