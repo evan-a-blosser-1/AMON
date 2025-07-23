@@ -12,10 +12,11 @@ def v_calc(Ham,omega,mu_I,CM,yp):
         y = yp - CM[it,1]
         z = 0  - CM[it,2]
         r = np.sqrt(x**2 + y**2 + z**2) 
+        # r = np.sqrt(y**2)
         U += mu_I[it]/r
     #########################
     psu = U[0]
-    centri = (omega**2)*(y**2)
+    centri = (omega**2)*(yp**2)
     # print(f"Omega: {omega} rad/s")
     # print(f"Ham:      {Ham} (km^2/s^2) ")
     # print(f"Psuedo:   {psu} (km^2/s^2) ")
