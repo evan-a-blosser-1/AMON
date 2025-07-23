@@ -18,10 +18,10 @@ plt.rcParams['mathtext.fontset'] = 'cm'
 
 
 
-folder   = "Databank/Run1/"
+folder   = "Databank/Test_noZ_short/" 
 
-srt = 4.03
-end = 05.0
+srt = 0.01
+end = 0.03
 
 
 exclude_List = []
@@ -29,8 +29,8 @@ for i in np.arange(srt, end, step=0.01):
     exclude_List.append(np.round(i,2))
 # print(exclude_List)
 ######## 1.10
-xi = 1.03
-xf = 2.02
+xi = 0.5
+xf = 4.0
 dx = 0.01
 nx = round((xf - xi)/dx)
 ########################

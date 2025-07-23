@@ -13,16 +13,16 @@ const  = C.constants()
 target = C.apophis()
 from equations import v_calc, Calc_Ham
 ######################################
-@dataclass
-class Task:
-    Time: np.ndarray
-    a0: np.ndarray
-    CM: np.ndarray
-    mu_I: np.ndarray
-    omega: float
-    Ham: float
+# @dataclass
+# class Task:
+#     Time: np.ndarray
+#     a0: np.ndarray
+#     CM: np.ndarray
+#     mu_I: np.ndarray
+#     omega: float
+#     Ham: float
      
-global y0, yf, dy, H0, Hf, dH
+# global y0, yf, dy, H0, Hf, dH
 ##################################################################
 ##################################################################
 ################### Simulation Settings <<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -31,7 +31,7 @@ OCSER_CPU = 0
 # Asteroid name
 aster    = 'Apophis'
 # data path
-datpth   = 'Databank/Test3/'  
+datpth   = 'Databank/Test_tr/'  
 ###
 # Hill Sphere (km)
 esc_lim = 34.0
@@ -39,20 +39,20 @@ esc_lim = 34.0
 T = 30.5
 ###
 # Save Poincare & Traj on/off (1/0)
-ps_svflg = 1
-tr_svflg = 0
+ps_svflg = 0
+tr_svflg = 1
 sm_svflg = 0
 ###
 # Exclude unnecessary
 # initial conditions 
-srt = 0.00
-end = 0.1
+srt = 1.01
+end = 1.03
 exclude_List = []
 for i in np.arange(srt, end, step=0.01):
     exclude_List.append(np.round(i,2))
 ##
-y0 = 0.95
-yf = 1.05
+y0 = 1.0
+yf = 1.04
 dy = 0.01
 ###
 H0 = 1.6e-9
@@ -61,7 +61,7 @@ dH = 0.1e-9
 ###########
 str_t = 0.0
 dt    = 1.0
-days  = 700.0
+days  = 60.0
 ########################
 ###################################################
 # Create a directory to save the data
@@ -111,6 +111,7 @@ def EOM_MASCON(Time,a,CM,mu_I, omega, Ham):
     dxdt = vx
     dydt = vy
     dzdt = vz
+    # dzdt = 0.0 
     #########
     Ux = np.zeros(1,dtype="float64")
     Uy = np.zeros(1,dtype="float64")
@@ -131,6 +132,7 @@ def EOM_MASCON(Time,a,CM,mu_I, omega, Ham):
     dvxdt = omega**2*x + 2*omega*vy + Ux[0]
     dvydt = omega**2*y - 2*omega*vx + Uy[0]
     dvzdt = Uz[0]
+    # dvzdt = 0.0
     ###
     dadt  = [dxdt,dydt,dzdt,dvxdt,dvydt,dvzdt]
     return dadt 
@@ -372,6 +374,7 @@ if __name__ == "__main__":
     # Loop through y0
     for ii in range (0, N1+1):
         y = y0 + float(ii)*dy
+        # y = round(y, 2)
         if np.round(y,2) in exclude_List:
             continue
         # Same for energy, this one can be nested inside position
