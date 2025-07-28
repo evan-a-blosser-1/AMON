@@ -15,10 +15,10 @@ Spin = 30.5
 # 
 omega = (2*np.pi)/(Spin * 3600)
 
-folder   = "Databank/OG_may27/" 
+folder   = "Databank/Tr_Check/" 
 ########
-xi = 1.0
-xf = 1.0
+xi = 3.7
+xf = 3.7
 dx = 0.01
 nx = round((xf - xi)/dx)
 ########################
@@ -269,7 +269,7 @@ for ii in range(0, nx + 1):
         #
         #
         col = col_ls[(ii * (nH + 1) + jj) % len(col_ls)]
-        ax1.plot(x, y, z ,alpha=1, color="#b2396b")
+        ax1.plot(x, y, z ,alpha=1, color="#0ddd22")
         ax1.add_collection3d(mesh)
         ax1.set_aspect('equal', 'box') 
         #####################################
@@ -352,7 +352,7 @@ for ii in range(0, nx + 1):
 
         ###########
         ###
-        Poincare(ps.T)
+        #Poincare(ps.T)
 
         plt.show()
 

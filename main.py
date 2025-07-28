@@ -13,16 +13,16 @@ const  = C.constants()
 target = C.apophis()
 from equations import v_calc, Calc_Ham
 ######################################
-@dataclass
-class Task:
-    Time: np.ndarray
-    a0: np.ndarray
-    CM: np.ndarray
-    mu_I: np.ndarray
-    omega: float
-    Ham: float
+# @dataclass
+# class Task:
+#     Time: np.ndarray
+#     a0: np.ndarray
+#     CM: np.ndarray
+#     mu_I: np.ndarray
+#     omega: float
+#     Ham: float
      
-global y0, yf, dy, H0, Hf, dH
+# global y0, yf, dy, H0, Hf, dH
 ##################################################################
 ##################################################################
 ################### Simulation Settings <<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -31,7 +31,7 @@ OCSER_CPU = 0
 # Asteroid name
 aster    = 'Apophis'
 # data path
-datpth   = 'Databank/Test_CorEQ2/'  
+datpth   = 'Databank/Smap_60days/'  
 ###
 # Hill Sphere (km)
 esc_lim = 34.0
@@ -39,11 +39,9 @@ esc_lim = 34.0
 T = 30.5
 ###
 # Save Poincare & Traj on/off (1/0)
-ps_svflg = 1
+ps_svflg = 0
 tr_svflg = 0
-ps_svflg = 1
-tr_svflg = 0
-sm_svflg = 0
+sm_svflg = 1
 ###
 # Exclude unnecessary
 # initial conditions 
@@ -54,16 +52,16 @@ for i in np.arange(srt, end, step=0.01):
     exclude_List.append(np.round(i,2))
 ##
 y0 = 0.5
-yf = 4.0
+yf = 10.0
 dy = 0.01
 ###
-H0 = 1.6e-9
-Hf = 1.6e-9
-dH = 0.1e-9
+H0 = 0.1e-9
+Hf = 5.0e-9
+dH = 0.01e-9
 ###########
 str_t = 0.0
 dt    = 1.0
-days  = 500.0
+days  = 60.0
 ########################
 ###################################################
 # Create a directory to save the data
@@ -324,7 +322,9 @@ def solve_orbit(task):
             os.remove(file1)
         ############################
         #   #
-        poincare(state,file1,Ham)
+        if sol.status == 0:
+            # Save the poincare section
+            poincare(state,file1,Ham)
     #################
     # Traj 
     if tr_svflg == 1:
@@ -393,7 +393,9 @@ if __name__ == "__main__":
                 continue
             # Define initial conditions for this iteration
             #      x0  y0      x_dot  y_dot 
-            a0 = np.array([ 0.0, y, 0.0, x_dot, 0.0,  0.0], dtype="float64")
+            a0 = [ 0.0, y, 0.0, x_dot, 0.0,  0.0]
+            # a0 = np.array([ 0.0, y, 0.0, x_dot, 0.0,  0.0], dtype="float64")
+            
             ###############################################################
             tasks.append((Time, a0, CM,  mu_I, omega, Ham))
             

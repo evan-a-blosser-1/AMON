@@ -18,7 +18,7 @@ plt.rcParams['mathtext.fontset'] = 'cm'
 
 
 
-folder   = "Databank/Test_CorEQ/" 
+folder   = "Databank/Test_CorEQ2/" 
 
 srt = 0.01
 end = 0.03
