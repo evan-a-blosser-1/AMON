@@ -18,7 +18,7 @@ plt.rcParams['mathtext.fontset'] = 'cm'
 
 
 
-folder   = "Databank/Test_CorEQ2/" 
+folder   = "Databank/1950DA_ps_bound_Lsoda/" 
 
 srt = 0.01
 end = 0.03
@@ -29,14 +29,14 @@ for i in np.arange(srt, end, step=0.01):
     exclude_List.append(np.round(i,2))
 # print(exclude_List)
 ######## 1.10
-xi = 0.5
-xf = 4.0
+xi = 1.5
+xf = 10.0
 dx = 0.01
 nx = round((xf - xi)/dx)
 ########################
-Hi = 1.6e-9
-Hf = 1.6e-9
-dH = 0.1e-9
+Hi = 4.0e-7
+Hf = 4.0e-7
+dH = 0.1e-7
 nH = round((Hf - Hi) / dH)
 ########################
 all_z = []
@@ -52,7 +52,7 @@ for ii in range(0, nx + 1):
         ######################
         H0 = Hi + float(jj)*dH
     
-        aux1 = f"{H0:.1e}"
+        aux1 = f"{H0:.0e}"
         #aux1 = f"{H0}"
         #aux1 = '0.0' 
         aux2 = str(round(x0, 5))

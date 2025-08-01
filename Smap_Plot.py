@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt  
 ################################
 # Path to Data
-Dat_Path = "Databank/Smap_60days/"
+Dat_Path = "Databank/1950DA_Smap/"
 ##############################################
 ##############################################
 BND_File = Dat_Path + 'Smap_Bound_Events.dat'
@@ -17,9 +17,9 @@ Escape    = np.loadtxt(ESC_File, delimiter=' ')
 Collision = np.loadtxt(COL_File, delimiter=' ')
 print(Escape)
 fig = plt.figure(figsize=(7,7))
-plt.scatter(Bound[:,0],Bound[:,1],s=1,color='blue',label='Bounded')
-plt.scatter(Collision[:,0],Collision[:,1],s=1,color='RED',label='Collision')
-plt.scatter(Escape[:,0],Escape[:,1],s=1,color='GREY',label='Escape')
+plt.scatter(Bound[:,0],Bound[:,1],s=10,color='blue',label='Bounded')
+plt.scatter(Collision[:,0],Collision[:,1],s=10,color='RED',label='Collision')
+plt.scatter(Escape[:,0],Escape[:,1],s=10,color='GREY',label='Escape')
 
 #plt.xlabel(r'Semi-Major Axis (km)$')
 #plt.ylabel(r'$Eccentricity$')

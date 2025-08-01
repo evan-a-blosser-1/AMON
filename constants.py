@@ -15,8 +15,23 @@ class apophis:
     self.mass = 5.31e10               # kg (Diogo 2021)
     self.GM = G*self.mass
     self.Re = 0.1935                  # km (volumetric mean radius - Diogo 2021)
-    self.spin =  30.4  # rad/s (30.4h per rotation Diogo 2021)
+    self.spin =  30.4                 # rad/s (30.4h per rotation Diogo 2021)
     self.Poly_x = -0.002150           # volInt.c output
     self.Poly_y = -0.001070           # Polyhedron Center of Mass (CM)
     self.Poly_z = -0.000308           # -x,y,z (km)
     self.gamma  = 0.2848196900000026  # Asteroid Scale to Km
+    
+    
+    
+class DA1950:
+  def __init__(self):
+    self.mass = 4.0e12                # kg
+    self.GM = G*self.mass
+    self.Re = 0.58                    # km (volumetric mean radius)
+    self.spin =  2.1216               # rad/s (2.1216 rot/hr)
+    self.Poly_x = 0.016325            # volInt.c output
+    self.Poly_y = 0.026771            # Polyhedron Center of Mass (CM)
+    self.Poly_z = 0.016897            # -x,y,z (km)
+    self.gamma  = 0.9913709055500112 # Asteroid Scale to Km
+    
+      

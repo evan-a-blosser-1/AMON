@@ -15,16 +15,16 @@ Spin = 30.5
 # 
 omega = (2*np.pi)/(Spin * 3600)
 
-folder   = "Databank/Tr_Check/" 
+folder   = "Databank/1950DA_tr_bound/" 
 ########
-xi = 3.7
-xf = 3.7
+xi = 8.0
+xf = 8.0
 dx = 0.01
 nx = round((xf - xi)/dx)
 ########################
-Hi = 1.6e-9
-Hf = 1.6e-9
-dH = 0.1e-9
+Hi = 4.0e-7
+Hf = 4.0e-7
+dH = 0.1e-6
 nH = round((Hf - Hi) / dH)
 ########################
 def Calc_Ham(state,omega,mu_I,CM):
@@ -232,7 +232,7 @@ for ii in range(0, nx + 1):
     for jj in range(0, nH + 1):
         H0 = Hi + float(jj)*dH
     
-        aux1 = f"{H0:.1e}"
+        aux1 = f"{H0:.0e}"
         #aux1 = f"{H0}"
         #aux1 = '0.0' 
         aux2 = str(round(x0, 5))
@@ -245,7 +245,7 @@ for ii in range(0, nx + 1):
         file = folder + '/' + 'TR-S0' +'-H' + aux1 + 'Yi' + aux2 + '.dat'
     
     
-    
+        print(file)
         # Skip missing files
         if os.path.isfile(file) == False:
             continue 

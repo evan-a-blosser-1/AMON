@@ -10,7 +10,6 @@ from dataclasses import dataclass
 sys.dont_write_bytecode = True
 import constants as C
 const  = C.constants()
-target = C.apophis()
 from equations import v_calc, Calc_Ham
 ######################################
 # @dataclass
@@ -29,19 +28,20 @@ from equations import v_calc, Calc_Ham
 # Turn on/off the OCSER CPU count (1/0): uses half cpu count of PC if 0
 OCSER_CPU = 0
 # Asteroid name
-aster    = 'Apophis'
+aster    = '1950DA_Prograde'
+target = C.DA1950()
 # data path
-datpth   = 'Databank/Smap_60days/'  
+datpth   = 'Databank/1950DA_ps_bound_Lsoda/'  
 ###
 # Hill Sphere (km)
-esc_lim = 34.0
+esc_lim = 103
 # Rotation Rate (rev/hr)
-T = 30.5
+T = target.spin 
 ###
 # Save Poincare & Traj on/off (1/0)
-ps_svflg = 0
+ps_svflg = 1
 tr_svflg = 0
-sm_svflg = 1
+sm_svflg = 0
 ###
 # Exclude unnecessary
 # initial conditions 
@@ -55,13 +55,13 @@ y0 = 0.5
 yf = 10.0
 dy = 0.01
 ###
-H0 = 0.1e-9
-Hf = 5.0e-9
-dH = 0.01e-9
+H0 = 4.0e-7
+Hf = 4.0e-7
+dH = 0.1e-6
 ###########
 str_t = 0.0
 dt    = 1.0
-days  = 60.0
+days  = 100.0
 ########################
 ###################################################
 # Create a directory to save the data
@@ -259,7 +259,8 @@ def solve_orbit(task):
             y0=a0,          
             args=(CM,  mu_I, omega, Ham),
             events=[collision, escape],
-            method='DOP853',     
+            #method='DOP853',     
+            method='LSODA',
             first_step=dt,
             rtol=1e-10,
             atol=1e-12,             

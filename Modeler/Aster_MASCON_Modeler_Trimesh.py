@@ -582,13 +582,13 @@ for it in range(0,tetra_count):
 #%% File Save
 ####################################################################
 ########################################################### CM Save
-np.savetxt( asteroid +"tri_CM.in", Output_Array_M1,delimiter=' ')
+np.savetxt( asteroid +"_tri_CM.in", Output_Array_M1,delimiter=' ')
 # np.savetxt( asteroid +"_M3CM.dat", Output_Array_MIII,delimiter=' ')
 # np.savetxt( asteroid +"_M8CM.dat", Output_Array_MVIII,delimiter=' ')
 
 #####################################################################################
 ######################### Gravitational Parameter Save ##############################
-np.savetxt( asteroid +"tri_mu.in", mu_i,delimiter=' ')
+np.savetxt( asteroid +"_tri_mu.in", mu_i,delimiter=' ')
 # np.savetxt( asteroid +"_M3mu.in", mu_MIII,delimiter=' ')
 # np.savetxt( asteroid +"_M8mu.in", mu_MVIII,delimiter=' ')
 
