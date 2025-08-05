@@ -31,7 +31,7 @@ OCSER_CPU = 0
 aster    = '1950DA_Prograde'
 target = C.DA1950()
 # data path
-datpth   = 'Databank/1950DA_ps_bound_Lsoda/'  
+datpth   = 'Databank/1950DA/Smap_zoomtest/'  
 ###
 # Hill Sphere (km)
 esc_lim = 103
@@ -39,9 +39,9 @@ esc_lim = 103
 T = target.spin 
 ###
 # Save Poincare & Traj on/off (1/0)
-ps_svflg = 1
+ps_svflg = 0
 tr_svflg = 0
-sm_svflg = 0
+sm_svflg = 1
 ###
 # Exclude unnecessary
 # initial conditions 
@@ -50,18 +50,18 @@ end = 0.1
 exclude_List = []
 for i in np.arange(srt, end, step=0.01):
     exclude_List.append(np.round(i,2))
-##
+## 0.5 to 25.0 for 1950DA
 y0 = 0.5
-yf = 10.0
-dy = 0.01
+yf = 25.0
+dy = 0.1
 ###
-H0 = 4.0e-7
-Hf = 4.0e-7
+H0 = 1.0e-7
+Hf = 1.5e-6
 dH = 0.1e-6
 ###########
 str_t = 0.0
 dt    = 1.0
-days  = 100.0
+days  = 10.0
 ########################
 ###################################################
 # Create a directory to save the data
@@ -259,8 +259,8 @@ def solve_orbit(task):
             y0=a0,          
             args=(CM,  mu_I, omega, Ham),
             events=[collision, escape],
-            #method='DOP853',     
-            method='LSODA',
+            method='DOP853',     
+            #method='LSODA',
             first_step=dt,
             rtol=1e-10,
             atol=1e-12,             

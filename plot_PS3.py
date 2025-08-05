@@ -18,7 +18,7 @@ plt.rcParams['mathtext.fontset'] = 'cm'
 
 
 
-folder   = "Databank/1950DA_ps_bound_Lsoda/" 
+folder   = "Databank/1950DA_ps_3e-7/" 
 
 srt = 0.01
 end = 0.03
@@ -29,13 +29,13 @@ for i in np.arange(srt, end, step=0.01):
     exclude_List.append(np.round(i,2))
 # print(exclude_List)
 ######## 1.10
-xi = 1.5
-xf = 10.0
-dx = 0.01
+xi = 0.5
+xf = 25.0
+dx = 0.1
 nx = round((xf - xi)/dx)
 ########################
-Hi = 4.0e-7
-Hf = 4.0e-7
+Hi = 3.0e-7
+Hf = 3.0e-7
 dH = 0.1e-7
 nH = round((Hf - Hi) / dH)
 ########################

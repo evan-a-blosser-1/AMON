@@ -15,15 +15,15 @@ Spin = 30.5
 # 
 omega = (2*np.pi)/(Spin * 3600)
 
-folder   = "Databank/1950DA_tr_bound/" 
+folder   = "Databank/1950DA/tr_1e-7_6.7km/" 
 ########
-xi = 8.0
-xf = 8.0
+xi = 1.0
+xf = 7.0
 dx = 0.01
 nx = round((xf - xi)/dx)
 ########################
-Hi = 4.0e-7
-Hf = 4.0e-7
+Hi = 1.0e-7
+Hf = 1.0e-7
 dH = 0.1e-6
 nH = round((Hf - Hi) / dH)
 ########################

@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt  
 ################################
 # Path to Data
-Dat_Path = "Databank/1950DA_Smap/"
+Dat_Path = "Databank/1950DA/Smap_zoomtest/"
 ##############################################
 ##############################################
 BND_File = Dat_Path + 'Smap_Bound_Events.dat'
