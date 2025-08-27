@@ -1,11 +1,16 @@
 import os
+import sys
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection 
 import numpy as np
+####
+sys.dont_write_bytecode = True
+import constants as C
 ###
 # Asteroid Name
-asteroid = 'Apophis'
+asteroid = '1950DA_Prograde'
+target = C.DA1950()
 folder   = "Databank/OG_3.7km/" 
 aux1 = "1.6e-09"
 aux2 = "3.7"
@@ -120,7 +125,7 @@ def OBJ_2_VertFace(Asteroid_file):
     return Vert_Data , Face_Data
 
 v,f = OBJ_2_VertFace(obj_Path)
-gamma = 0.285 
+gamma = target.gamma
 v = v*gamma
 f = f-1 
 ###
@@ -128,27 +133,33 @@ fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
 mesh = Poly3DCollection([v[ii] for ii in f], 
-                edgecolor='red',
+                edgecolor='black',
                 facecolors="white",
-                linewidth=0.75,
+                linewidth=0.05,
                 alpha=0.0)
 
-ax.scatter(CM[:,0], CM[:,1], CM[:,2], color='cyan', s=10)
+ax.scatter(CM[:,0], CM[:,1], CM[:,2], color='green', s=10)
            
 
-#ax.add_collection3d(mesh)
+# ax.add_collection3d(mesh)
 
 # ax.plot(data[:, 0], data[:, 1], data[:, 2],color='yellow', linewidth=1.5, label='Trajectory')
 ax.set_aspect('equal', 'box') 
 
 
+#####
+# Dark mode 
+# Background = "#000000"
+# # Hide Grid 
+# #Grid_Color = "#000000"
+# #plt.rcParams['grid.color'] = Grid_Color
+# # Display gird 
+# Grid_Color = 'white'
 
-Background = "#000000"
-# Hide Grid 
-#Grid_Color = "#000000"
-#plt.rcParams['grid.color'] = Grid_Color
-# Display gird 
-Grid_Color = 'white'
+#####
+# Light mode 
+Background = '#FFFFFF'
+Grid_Color = "#000000"
 
 fig.set_facecolor(Background)
 ax.set_facecolor(Background)

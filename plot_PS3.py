@@ -18,7 +18,7 @@ plt.rcParams['mathtext.fontset'] = 'cm'
 
 
 
-folder   = "Databank/1950DA_ps_3e-7/" 
+folder   = 'Databank/1950DA/ps_3e-8/'  
 
 srt = 0.01
 end = 0.03
@@ -30,13 +30,13 @@ for i in np.arange(srt, end, step=0.01):
 # print(exclude_List)
 ######## 1.10
 xi = 0.5
-xf = 25.0
+xf = 20.0
 dx = 0.1
 nx = round((xf - xi)/dx)
 ########################
-Hi = 3.0e-7
-Hf = 3.0e-7
-dH = 0.1e-7
+Hi = 3.0e-8
+Hf = 3.0e-8
+dH = 0.1e-8
 nH = round((Hf - Hi) / dH)
 ########################
 all_z = []
@@ -76,6 +76,7 @@ for ii in range(0, nx + 1):
         # Print loaded files after skipping
         print(file)
         ps = np.loadtxt(file, dtype=float)
+        print(ps.shape)
         x = list(ps[:, 1])
         y = list(ps[:, 4])
         z = list(ps[:, 6])

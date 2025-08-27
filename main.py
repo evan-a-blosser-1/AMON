@@ -31,9 +31,11 @@ OCSER_CPU = 0
 aster    = '1950DA_Prograde'
 target = C.DA1950()
 # data path
-datpth   = 'Databank/1950DA/Smap_zoomtest/'  
+datpth   = 'Databank/1950DA/Smap_max/'  
 ###
 # Hill Sphere (km)
+# 1950DA: 103
+# Apohpis: 34
 esc_lim = 103
 # Rotation Rate (rev/hr)
 T = target.spin 
@@ -41,7 +43,7 @@ T = target.spin
 # Save Poincare & Traj on/off (1/0)
 ps_svflg = 0
 tr_svflg = 0
-sm_svflg = 1
+sm_svflg = 0
 ###
 # Exclude unnecessary
 # initial conditions 
@@ -52,16 +54,16 @@ for i in np.arange(srt, end, step=0.01):
     exclude_List.append(np.round(i,2))
 ## 0.5 to 25.0 for 1950DA
 y0 = 0.5
-yf = 25.0
+yf = 20.0
 dy = 0.1
 ###
-H0 = 1.0e-7
-Hf = 1.5e-6
-dH = 0.1e-6
+H0 = 0.1e-7
+Hf = 2.0e-6
+dH = 0.1e-7
 ###########
 str_t = 0.0
 dt    = 1.0
-days  = 10.0
+days  = 60.0
 ########################
 ###################################################
 # Create a directory to save the data
@@ -197,7 +199,26 @@ def poincare(state,sv_file,Ham):
         x1[4] = state[4, itp]
         x1[5] = state[5, itp]
         #####################
-        
+###################################
+######################### New Poincare 
+# def poincare_event(Time, a, CM,  mu_I, omega, Ham):
+#     # Check if the trajectory crosses the hyperplane y = 0
+#     # with positive velocity in the y direction (vy > 0)
+#     return a[1]
+# poincare_event.direction = 1
+# poincare_event.terminal = False
+
+# # Function to save crossed hyperplane events to file
+# def save_poincare_event(state,sv_file,Ham):
+#     with open(sv_file, "a") as file_PS:
+#         for ps_it in range(len(state)):
+#             file_PS.write(str(state[ps_it, 0]) + ' ' + str(state[ps_it, 1]) + \
+#                 ' ' + str(state[ps_it, 2]) + ' ' + str(state[ps_it, 3]) + \
+#                 ' ' + str(state[ps_it, 4]) + ' ' + str(state[ps_it, 5]) + \
+#                 ' ' + str(round(state[1,0], 5)) + ' ' + str(round(state[3,0], 14)) + \
+#                 ' ' + str(round(Ham, 14)) +  "\n")
+#         # np.savetxt(file_PS, state, newline=' ')
+#         file_PS.close()
 ################################################
 ################# Events
 ###############################################
@@ -259,6 +280,7 @@ def solve_orbit(task):
             y0=a0,          
             args=(CM,  mu_I, omega, Ham),
             events=[collision, escape],
+            # events=[collision, escape, poincare_event],
             method='DOP853',     
             #method='LSODA',
             first_step=dt,
@@ -326,6 +348,16 @@ def solve_orbit(task):
         if sol.status == 0:
             # Save the poincare section
             poincare(state,file1,Ham)
+        #############################
+        # # New Poincare Section
+        # if sol.t_events[2].size > 0:
+        #     ps_state = sol.y_events[2]
+        #     print('------------')
+        #     print(ps_state[0,0])
+        #     print(len(ps_state))
+        #     save_poincare_event(ps_state, file1, Ham)
+            
+        #####################################################
     #################
     # Traj 
     if tr_svflg == 1:
@@ -362,12 +394,13 @@ if OCSER_CPU == 1:
     CPU_COUNT = int(os.getenv("SLURM_CPUS_PER_TASK"))
 else:
     # CPU_COUNT = int(1)
-    CPU_COUNT = int(multiprocessing.cpu_count() / 2 )
+    CPU_COUNT = int(multiprocessing.cpu_count() / 3 )
+    
 ###############################################################################
 ########################### Parallel processing ###############################
 if __name__ == "__main__":
     #######################################################
-    
+    print(f"Using {CPU_COUNT} CPU cores for parallel processing.")
     #######################################################
     ##################### Begin Loops ##################### 
     Calc_Start_Time = time.time() 

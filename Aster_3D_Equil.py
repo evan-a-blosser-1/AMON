@@ -10,8 +10,28 @@ import sys
 sys.dont_write_bytecode = True
 import constants as C
 const    = C.constants()
+import Asteroid_Package as AP
+#################################################
+####### Enter Asteroid Name & Update Here #######
+Asteroid_Name = 'Apophis'
 target = C.apophis()
-import Asteroid_Package as Astro
+##########################################
+# Newton-Raphson settings
+Tol = 1e-3
+# max = 1000000 
+Miter = 1000000
+# Step limit for each iteration
+Step = 3.0
+# initial guess array size 
+size = 3
+# Multiples of effective radius
+# for the initial guess
+Guess_lim_Rad = 1.1
+###################
+# Graph settings
+Contour_Size = 100
+Contour_Levels = 350 
+Font_Size = 14
 ########################################
 ########################################
 # Saving in Databank
@@ -21,13 +41,10 @@ Data_PATH   = 'Databank/Eq_Pts_' + folder_name + '/'
 ################################
 ################################
 ##################
-Spin_Rate = 30.4
-omega = ((2*np.pi)/Spin_Rate)*(1/3600)
+Spin_Rate = target.spin
+omega = 2.0*np.pi/(Spin_Rate*3600.0)
 scale = target.gamma
 Mesh_color = 'Black'
-#################################################
-####### Enter Asteroid Name & Update Here #######
-Asteroid_Name = 'Apophis'
 # R_eff = target.Re
 # print(f"Effective Radius: {R_eff} km")
 ############################################
@@ -40,31 +57,8 @@ polyhedron_volume = mesh.volume
 R_eff = (3 * polyhedron_volume / (4 * np.pi)) ** (1/3)
 print(f"Volume: {polyhedron_volume} km^3")
 print(f"Effective Radius: {R_eff} km")
+Guess_Lim = R_eff*Guess_lim_Rad
 ###########################################
-# initial guess array size 
-size = 2
-#
-Contour_Size = 100
-Contour_Levels = 350 
-Font_Size = 14
-
-Guess_Lim = R_eff*3.5
-# Initial guesses for the equilibrium points
-# vec1 = np.array([[0.25], [1.0], [0.5]])
-# vec2 = np.array([[-0.6], [0.8], [0.7]])
-# vec3 = np.array([[0.9], [0.4], [-0.5]])
-# vec4 = np.array([[0.6], [-0.9], [0.3]])
-# vec5 = np.array([[-0.9], [-0.5], [-0.2]])
-# initial_guesses = [vec1, vec2, vec3, vec4, vec5]
-
-##########################################
-# settings
-Tol = 1e-6
-# max = 1000000 
-Miter = 100000
-
-Step = 1.0
-
 ##################################################
 ########### Load File ############################
 Aster_File_CM   =  Asteroid_Name + "_CM.in"
@@ -72,11 +66,8 @@ Aster_File_OBJ  =  Asteroid_Name + ".obj"
 CM_MI = np.loadtxt(Aster_File_CM, delimiter=' ')
 mu_I = np.loadtxt(Asteroid_Name + '_mu.in', delimiter=' ')
 mu = np.sum(mu_I)
+print(f"Gravitational Parameter: {mu} km^3/s^2")
 ##################################################
-#
-Poly_CM_X = target.Poly_x*scale
-Poly_CM_Y = target.Poly_y*scale
-Poly_CM_Z = target.Poly_z*scale
 #################################################################
 #################################################################
 #%% 3D Newton Raphson
@@ -120,9 +111,9 @@ def Hxx_3D(vars,CM_MI,mu_I):
         R_z = z - CM_MI[i,2]
         R = np.sqrt(R_x**2 + R_y**2 + R_z**2)
         ############################## correction: - mu_I[i]/R**3 +
-        Uxx +=  (3*mu_I[i]*R_x**2)/R**5
-        Uyy +=  (3*mu_I[i]*R_y**2)/R**5
-        Uzz +=  (3*mu_I[i]*R_z**2)/R**5
+        Uxx += -mu_I[i]/R**3 + (3*mu_I[i]*R_x**2)/R**5
+        Uyy += -mu_I[i]/R**3 + (3*mu_I[i]*R_y**2)/R**5
+        Uzz += -mu_I[i]/R**3 + (3*mu_I[i]*R_z**2)/R**5
         ##############################  
         Uxy += (3*mu_I[i]*R_x*R_y)/R**5
         Uxz += (3*mu_I[i]*R_x*R_z)/R**5
@@ -136,9 +127,12 @@ def Hxx_3D(vars,CM_MI,mu_I):
     Output  = np.concatenate((Top_Row,Mid_Row,Bot_Row), axis =0)
     return Output
 ###########################################
-def New_Raph_3D(x0, tol, max_iter, step_limit):
-    x = x0
+def New_Raph_3D(x, tol, max_iter, step_limit):
+    #######
     for i in range(max_iter):
+        ########################
+        AP.print_progress(i, max_iter, bar_length=50)
+        ########################
         hx  = Hx_3D(x,CM_MI,mu_I)
         hxx = Hxx_3D(x,CM_MI,mu_I)
         
@@ -166,9 +160,10 @@ def New_Raph_3D(x0, tol, max_iter, step_limit):
         if np.linalg.norm(delta_x) <tol:
             print(f"| Converged to equilibrium point after {i+1} iterations")
             return x
-        
+    print("\n")
     print("| Did not converge within max iterations.")
-    return x
+    DNC = 1
+    return x, DNC
 ####################################################
 ####################################################
 LB = -Guess_Lim
@@ -180,27 +175,35 @@ z_range = np.linspace(LB, UB, size)
 X, Y, Z = np.meshgrid(x_range, y_range, z_range)
 # Flatten the meshgrid to create a list of initial guesses
 initial_guesses = [np.array([[x], [y], [z]]) for x, y, z in zip(X.ravel(), Y.ravel(), Z.ravel())]
+print(f"Total initial guesses: {len(initial_guesses)}")
+print(f"Initial guess range: {LB} to {UB} km")
 ####################################################
 Equi_Pts_3D = []
 for i, guess in enumerate(initial_guesses):
     
     guess_copy = guess.copy()
-    start_Message = f"""
-| Initial Guess:     x = {guess[0,0]:.6f}, y = {guess[1,0]:.6f}, z = {guess[2,0]:.6f}
-    """
-    print(start_Message)
-    Equilibrium = New_Raph_3D(guess_copy,tol=Tol,max_iter=Miter, step_limit=Step)
+    print(f"| Initial Guess:     x = {guess[0,0]:.6f}, y = {guess[1,0]:.6f}, z = {guess[2,0]:.6f}")
     
-    Equi_Pts_3D.append(Equilibrium)
-    Out_Message = f"""
-{'-'*42}
-| Equilibrium Reached at: x = {Equilibrium[0,0]:.6f}, y = {Equilibrium[1,0]:.6f}, z = {Equilibrium[2,0]:.6f}
-{'-'*42}
-    """
-    print(Out_Message)
+    #########
+    # Call Newton-Raphson
+    EqPt, DNC = New_Raph_3D(guess_copy,tol=Tol,max_iter=Miter, step_limit=Step)
+    print('\n')
+    ###
+    if DNC == 1:
+        print(f"|End Position: : x = {EqPt[0,0]:.6f}, y = {EqPt[1,0]:.6f}, z = {EqPt[2,0]:.6f}")
+    #### 
+    else: 
+        Equi_Pts_3D.append(EqPt)
+        print(f"| Equilibrium Reached at: x = {EqPt[0,0]:.6f}, y = {EqPt[1,0]:.6f}, z = {EqPt[2,0]:.6f}")
     
-print('|---Done---')
-#%% 3D Plot
+print('|---Done Computing---')
+if len(Equi_Pts_3D) == 0:
+    print("| No Equilibrium Points Found")
+    sys.exit(0)
+else:
+    print(f"| Found {len(Equi_Pts_3D)} Equilibrium Points")
+    print("| Testing Stability of Equilibrium Points...")
+#%% Equilibrium Points Stability Analysis
 #################################################
 #################################################
 # Remove duplicate roots
@@ -375,7 +378,7 @@ print(STABLE_EQ[:,1])
 print(STABLE_EQ[:,2])
 
 
-
+#%% 3D plot
 #######################################################
 ################################################# Plot 
 EQ3D_text = []
@@ -389,7 +392,7 @@ fig = plt.figure(figsize=(10, 8))
 ax = fig.add_subplot(111, projection='3d')
 ax.scatter(STABLE_EQ[:,0] , STABLE_EQ[:,1], STABLE_EQ[:,2],s=20,color='Purple')
 
-Asteroid_Mesh = Astro.OBJ_2_Mesh(Aster_File_OBJ,scale,Mesh_color)
+Asteroid_Mesh = AP.OBJ_2_Mesh(Aster_File_OBJ,scale,Mesh_color)
 ax.add_collection3d(Asteroid_Mesh)
 
 
