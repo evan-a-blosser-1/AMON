@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import os
 
-folder   = "Databank/Test_tr/" 
+folder   = "Databank/Apophis/Tr_Check" 
 ########
 yi = 1.0
-yf = 4.0
+yf = 1.0
 dy = 0.01
 nx = round((yf - yi)/dy)
 ########################
@@ -24,8 +24,8 @@ ax1.set_xlabel('X (km)')
 ax1.set_ylabel('Y (km)')
 ax1.set_zlabel('Z (km)')
 ###########################
-xplane = np.linspace(1,1.2,100)
-zplane = np.linspace(-.1,.1,100)
+xplane = np.linspace(0.95,1.05,100)
+zplane = np.linspace(-.025,.025,100)
 X, Z = np.meshgrid(xplane, zplane)
 Y = np.zeros_like(X) 
 
@@ -63,7 +63,7 @@ for ii in range(0, nx + 1):
         #####################
         col = col_ls[(ii * (nH + 1) + jj) % len(col_ls)]
         #################################################
-        ax1.plot_surface(X, Y, Z, alpha=0.2, color='gray')
+        ax1.plot_surface(X, Y, Z, alpha=0.25, color='gray')
 
         ax1.plot(x, y, z ,alpha=1, color=col)
         ax1.set_aspect('equal', 'box') 

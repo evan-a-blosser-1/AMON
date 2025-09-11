@@ -34,9 +34,9 @@ target = C.DA1950()
 datpth   = 'Databank/1950DA/Smap_max/'  
 ###
 # Hill Sphere (km)
-# 1950DA: 103
-# Apohpis: 34
-esc_lim = 103
+# 1950DA: 578.544360
+# Apohpis: 340.0
+esc_lim = 578.544360
 # Rotation Rate (rev/hr)
 T = target.spin 
 ###
