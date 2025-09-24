@@ -31,19 +31,20 @@ OCSER_CPU = 0
 aster    = '1950DA_Prograde'
 target = C.DA1950()
 # data path
-datpth   = 'Databank/1950DA/Smap_max/'  
+datpth   = 'Databank/1950DA_REDO/3e-7/'  
 ###
 # Hill Sphere (km)
 # 1950DA: 578.544360
 # Apohpis: 340.0
-esc_lim = 578.544360
+esc_lim = 466.7200
 # Rotation Rate (rev/hr)
 T = target.spin 
 ###
 # Save Poincare & Traj on/off (1/0)
-ps_svflg = 0
+ps_svflg = 1
 tr_svflg = 0
 sm_svflg = 0
+land_dV  = 0
 ###
 # Exclude unnecessary
 # initial conditions 
@@ -57,13 +58,13 @@ y0 = 0.5
 yf = 20.0
 dy = 0.1
 ###
-H0 = 0.1e-7
-Hf = 2.0e-6
+H0 = 3.0e-7
+Hf = 3.0e-7
 dH = 0.1e-7
 ###########
 str_t = 0.0
 dt    = 1.0
-days  = 60.0
+days  = 500.0
 ########################
 ###################################################
 # Create a directory to save the data
@@ -174,7 +175,7 @@ def poincare(state,sv_file,Ham):
         # right side 
         # if state[0,itp]*x1[0] < 0.0 and state[0,itp] > 0.0:
         # Both sides
-        if state[0,itp]*x1[0] < 0.0 and state[0,itp] > 0.0:
+        if state[0,itp]*x1[0] < 0.0 and state[0,itp] < 0.0:
             
             xp[0] = (state[0, itp] + x1[0])/2.0
             xp[1] = (state[1, itp] + x1[1])/2.0
@@ -295,14 +296,29 @@ def solve_orbit(task):
     
     ###
     state = sol.y 
-    
-    
     ################################ Checkpoint ##########################################
     ################################
     # print(sol)
     # print(sol.message)
     # input("Press Enter to continue...")
     sol_t = sol.t[-1]
+    ##################################
+    # Landing Delta-V ( from collisions)
+    if land_dV == 1:
+        Land_File  = datpth +  "Landing_velocities"  + '.dat'
+        if sol.status == 1:
+            if sol.t_events[0].size > 0:
+                # Get the last state (final conditions)
+                final_state = state[:, -1]  # Last column of state array
+                final_velocity = np.sqrt(final_state[3]**2 + final_state[4]**2 + final_state[5]**2)
+                ####################################################################################
+                with open(Land_File, "a") as file_PS:
+                    file_PS.write(str(a0[1]) + ' ' + str(Ham) + \
+                        ' ' + str(final_velocity) + \
+                        ' ' + str(final_state[0]) + ' ' + str(final_state[1]) + ' ' + str(final_state[2]) + \
+                        ' ' + str(final_state[3]) + ' ' + str(final_state[4]) + ' ' + str(final_state[5]) + \
+                        "\n")
+                    file_PS.close()
     ####################
     # Survival Map 
     ########################
@@ -454,6 +470,10 @@ if __name__ == "__main__":
     print(f"Elapsed Time: {Calculated_In} seconds")
     Time_File_Name = datpth + "_execution_time_" + '.dat'
     with open(Time_File_Name, mode='w') as file:
-        file.write(str(Calculated_In) + ' (sec)')
-
+        file.write('Calculation Time: ' + str(Calculated_In) + ' (sec)')
+        file.write('\n')
+        file.write('Cores used:' + str(CPU_COUNT) + ' CPU Cores')
+        file.write('\n')
+        file.write('number of Simulations: ' + str(len(tasks)))
+    file.close()
 

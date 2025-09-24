@@ -18,10 +18,12 @@ plt.rcParams['mathtext.fontset'] = 'cm'
 
 
 
-folder   = 'Databank/1950DA/ps_3e-8/'  
+folder   = 'Databank/1950DA_REDO/3e-7/'  
 
+# srt = 0.8
+# end = 3.0
 srt = 0.01
-end = 0.03
+end = 0.02
 
 
 exclude_List = []
@@ -30,13 +32,13 @@ for i in np.arange(srt, end, step=0.01):
 # print(exclude_List)
 ######## 1.10
 xi = 0.5
-xf = 20.0
+xf = 3.0
 dx = 0.1
 nx = round((xf - xi)/dx)
 ########################
-Hi = 3.0e-8
-Hf = 3.0e-8
-dH = 0.1e-8
+Hi = 3.0e-7
+Hf = 3.0e-7
+dH = 0.1e-7
 nH = round((Hf - Hi) / dH)
 ########################
 all_z = []
@@ -82,7 +84,12 @@ for ii in range(0, nx + 1):
         z = list(ps[:, 6])
         all_z.extend(z) 
         print(z[-1])
-        POINCARE_Sec = plt.scatter(x, y, c=z, s=0.5, cmap='viridis',alpha=1)
+        # if z[-1] == 0.7:
+        #     pltcol = 'blue'
+        # elif z[-1] == 3.0:
+        #     pltcol = "#03bc4d"
+        # POINCARE_Sec = plt.scatter(x, y, s=0.5, color=pltcol, alpha=1)
+        POINCARE_Sec = plt.scatter(x, y, c=z, s=0.5, cmap='viridis', alpha=1)
         scatter_plots.append(POINCARE_Sec)
         
 norm = plt.Normalize(min(all_z), max(all_z))
@@ -91,24 +98,28 @@ for scatter in scatter_plots:
     scatter.set_norm(norm)
     
     
-cbar = plt.colorbar(POINCARE_Sec, 
-                    orientation='vertical', 
-                    pad=0.01,
-                    aspect=20)
+cbar = plt.colorbar(POINCARE_Sec, orientation='vertical', pad=0.01,aspect=20)
 
-#cbar.set_label(r'$H (\frac{km^2}{s^2})$', fontsize=25, labelpad=10)
+cbar.set_label(r'$H (\frac{km^2}{s^2})$', fontsize=25, labelpad=10)
 
-cbar.set_label(r'$y_0 (km)$', fontsize=25, labelpad=10)
+cbar.set_label(r'$y_0 (km)$', fontsize=35, labelpad=10)
 
 cbar.ax.tick_params(labelsize=20) 
       
-plt.xlabel(r'$y$ (km)', fontsize=25)
-plt.xticks(fontsize=20)
+      
+plt.xlabel(r'$y$ $(km)$', fontsize=35)
+plt.xticks(fontsize=24)
 # plt.xlim(-10, 10)
 
-plt.ylabel(r'$\dot{y}$ (km/s)', fontsize=25)
-plt.yticks(fontsize=20)
+plt.ylabel(r'$\dot{y}$ $(\frac{km}{s})$', fontsize=35)
+plt.yticks(fontsize=24)
 
+
+# Increase font size of scientific notation on y-axis
+plt.ticklabel_format(style='scientific', axis='y', scilimits=(0,0))
+plt.gca().yaxis.get_offset_text().set_fontsize(14)  # Adjust font size (default is usually 10-12)
+
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=3, markerscale=3)
 
 # fig.set_facecolor('#000000')
 # ax.set_facecolor('#000000')
