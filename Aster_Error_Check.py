@@ -211,7 +211,11 @@ print(TP)
 
 ################ Plot Results ##################
 ################################################
-fig, ax = plt.subplots(figsize=(10, 4))
+fig, ax = plt.subplots(figsize=(10, 5))
+plt.rcParams["figure.autolayout"] = True
+plt.rcParams['font.family'] = 'Times New Roman'
+plt.rcParams['font.sans-serif'] = 'Times New Roman'
+plt.rcParams['mathtext.fontset'] = 'cm'
 ########
 Rel_Error = ((B2-M1)/B2)
 plt.plot(x, Rel_Error,label='2-Body Approximation Vs. MASCON', color='blue')
@@ -222,10 +226,12 @@ plt.plot(x, Rel_Error_T_M,label='MASCON Vs. Tsuolis',color='red')
 Rel_Error = ((B2-TP)/B2)
 plt.plot(x, Rel_Error,label='2-Body Approximation Vs. Tsuolis', color='green')
 #########
-ax.set_xlabel('X (km)', fontsize=12, fontweight='bold')
-ax.set_ylabel('Relative Error', fontsize=12, fontweight='bold')
-ax.set_title('Error in Potential', fontsize=14, fontweight='bold')
-plt.legend()
+ax.set_xlabel('X (km)', fontsize=24)
+ax.tick_params(axis='x', labelsize=24)
+ax.set_ylabel('Relative Error', fontsize=24)
+ax.tick_params(axis='y', labelsize=24)
+# ax.set_title('Error in Potential', fontsize=14, fontweight='bold')
+plt.legend(fontsize=18)
 ############
 plt.show()
 

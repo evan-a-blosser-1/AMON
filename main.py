@@ -31,7 +31,7 @@ OCSER_CPU = 0
 aster    = '1950DA_Prograde'
 target = C.DA1950()
 # data path
-datpth   = 'Databank/1950DA_REDO/3e-7/'  
+datpth   = 'Databank/1950DA_REDO/landing/'  
 ###
 # Hill Sphere (km)
 # 1950DA: 578.544360
@@ -41,8 +41,8 @@ esc_lim = 466.7200
 T = target.spin 
 ###
 # Save Poincare & Traj on/off (1/0)
-ps_svflg = 1
-tr_svflg = 0
+ps_svflg = 0
+tr_svflg = 1
 sm_svflg = 0
 land_dV  = 0
 ###
@@ -54,13 +54,13 @@ exclude_List = []
 for i in np.arange(srt, end, step=0.01):
     exclude_List.append(np.round(i,2))
 ## 0.5 to 25.0 for 1950DA
-y0 = 0.5
-yf = 20.0
+y0 = 3.0
+yf = 3.0
 dy = 0.1
 ###
-H0 = 3.0e-7
-Hf = 3.0e-7
-dH = 0.1e-7
+H0 = 2.0e-8
+Hf = 2.0e-8
+dH = 0.1e-8
 ###########
 str_t = 0.0
 dt    = 1.0

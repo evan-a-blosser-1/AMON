@@ -22,16 +22,16 @@ Spin = target.spin
 # 
 omega = (2*np.pi)/(Spin * 3600)
 
-folder   = "Databank/1950DA_res/3.0e-7_0.7km/"
+folder   = "Databank/1950DA_res/Landing_trj/"
 ########
-xi = 0.7
-xf = 0.7
+xi = 3.0
+xf = 3.0
 dx = 0.01
 nx = round((xf - xi)/dx)
 ########################
-Hi = 3.0e-7
-Hf = 3.0e-7
-dH = 0.1e-7
+Hi = 2.0e-8
+Hf = 2.0e-8
+dH = 0.1e-8
 nH = round((Hf - Hi) / dH)
 #############################################################################
 ########################
@@ -144,8 +144,8 @@ print(f"Total Gravitational Parameter: {mu}")
 #######################################################
 # plt.rcParams["figure.figsize"] = [6.5, 6.5]
 plt.rcParams["figure.autolayout"] = True
-# plt.rcParams['font.family'] = 'Times New Roman'
-# plt.rcParams['font.sans-serif'] = 'Times New Roman'
+plt.rcParams['font.family'] = 'Times New Roman'
+plt.rcParams['font.sans-serif'] = 'Times New Roman'
 plt.rcParams['mathtext.fontset'] = 'cm'
 
 # plt.axvline(x = 4.45e-3, color = 'r')
@@ -163,65 +163,53 @@ v = mesh.vertices
 f = mesh.faces 
 print(f"Vertices: {v.shape}")
 print(f"Faces: {f.shape}") 
-# mesh = Poly3DCollection([v[ii] for ii in f], 
-#                 edgecolor='black',
-#                 facecolors="white",
-#                 linewidth=0.75,
-#                 alpha=0.0)
-# fig = plt.figure()
-# ax = fig.add_subplot(111, projection='3d')
-# ax.add_collection3d(mesh)
-# ax.set_xlabel('X')
-# ax.set_ylabel('Y')
-# ax.set_zlabel('Z')
-# plt.show()
 
 col_ls = ['r', 'b', 'g', 'y', 'm', 'c', 'k']
 
-fig1 = plt.figure()
+fig1 = plt.figure(figsize=(10, 10))
 ax1  = fig1.add_subplot(111, projection='3d')
-ax1.set_title('Trajectory')
-ax1.set_xlabel(r'$X$ $(km)$', fontsize=25, labelpad=15)
-ax1.set_ylabel(r'$Y$ $(km)$', fontsize=25, labelpad=15)
-ax1.set_zlabel(r'$Z$ $(km)$', fontsize=25, labelpad=15)
+ax1.set_xlabel(r'$X$ $(km)$', fontsize=25, labelpad=25)
+ax1.set_ylabel(r'$Y$ $(km)$', fontsize=25, labelpad=25)
+ax1.set_zlabel(r'$Z$ $(km)$', fontsize=25, labelpad=25)
+ax1.tick_params(axis='both', which='major', labelsize=25)
 
-fig2 = plt.figure()
-ax2  = fig2.add_subplot(111)
-#ax2.set_title('Hamiltonian Energy')
-ax2.set_xlabel('Time (days)', fontsize=20)
-ax2.set_ylabel(r'Energy $(\frac{km^2}{s^2})$', fontsize=20)
-ax2.tick_params(axis='x', labelsize=24)
-ax2.tick_params(axis='y', labelsize=24)
-# Increase font size of scientific notation on y-axis
-ax2.ticklabel_format(style='scientific', axis='y', scilimits=(0,0))
-ax2.yaxis.get_offset_text().set_fontsize(20)  # Fixed: removed gca() and increased font size
+# fig2 = plt.figure()
+# ax2  = fig2.add_subplot(111)
+# #ax2.set_title('Hamiltonian Energy')
+# ax2.set_xlabel('Time (days)', fontsize=20)
+# ax2.set_ylabel(r'Energy $(\frac{km^2}{s^2})$', fontsize=20)
+# ax2.tick_params(axis='x', labelsize=24)
+# ax2.tick_params(axis='y', labelsize=24)
+# # Increase font size of scientific notation on y-axis
+# ax2.ticklabel_format(style='scientific', axis='y', scilimits=(0,0))
+# ax2.yaxis.get_offset_text().set_fontsize(20)  # Fixed: removed gca() and increased font size
 
-ax2.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=3, markerscale=3)
-
-
-fig3 = plt.figure()
-ax3  = fig3.add_subplot(111)
-ax3.set_title(r'Velocity')
-ax3.set_xlabel('time (sec)')
-ax3.set_ylabel(r'Velocity $\frac{km}{s}$')
+# ax2.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=3, markerscale=3)
 
 
-fig4 = plt.figure()
-ax4  = fig4.add_subplot(111)
-ax4.set_title(r'Position')
-ax4.set_xlabel('time (sec)')
-ax4.set_ylabel(r'Position (km)')
+# fig3 = plt.figure()
+# ax3  = fig3.add_subplot(111)
+# ax3.set_title(r'Velocity')
+# ax3.set_xlabel('time (sec)')
+# ax3.set_ylabel(r'Velocity $\frac{km}{s}$')
 
 
+# fig4 = plt.figure()
+# ax4  = fig4.add_subplot(111)
+# ax4.set_title(r'Position')
+# ax4.set_xlabel('time (sec)')
+# ax4.set_ylabel(r'Position (km)')
 
 
 
-fig7 = plt.figure()
-ax7  = fig7.add_subplot(111, projection='3d')
-ax7.set_title('Inertial Frame Trajectory')  
-ax7.set_xlabel('X (km)')
-ax7.set_ylabel('Y (km)')
-ax7.set_zlabel('Z (km)')
+
+
+# fig7 = plt.figure()
+# ax7  = fig7.add_subplot(111, projection='3d')
+# ax7.set_title('Inertial Frame Trajectory')  
+# ax7.set_xlabel('X (km)')
+# ax7.set_ylabel('Y (km)')
+# ax7.set_zlabel('Z (km)')
 
 ########################################################
 ####################
@@ -241,7 +229,7 @@ for ii in range(0, nx + 1):
         #file = folder + '/' + 'PY-C' + aux1 + 'Yi' + aux2 + '.dat'
         
                 
-        file = folder + '/' + 'TR-S0' +'-H' + aux1 + 'Yi' + aux2 + '.dat'
+        file = folder + '/' + 'TR-S1' +'-H' + aux1 + 'Yi' + aux2 + '.dat'
     
     
         print(file)
@@ -261,70 +249,70 @@ for ii in range(0, nx + 1):
 
         # Get last 1000 points
         # [-1000:, 2]
-        x = list(ps[:, 0])
-        y = list(ps[:, 1])
-        z = list(ps[:, 2])
+        x = list(ps[-10000:, 0])
+        y = list(ps[-10000:, 1])
+        z = list(ps[-10000:, 2])
         all_z.extend(z) 
         #####################
         print(f"y0 = {y[0]}")
         #
         #
         col = col_ls[(ii * (nH + 1) + jj) % len(col_ls)]
-        ax1.plot(x, y, z ,alpha=1, color='blue')
+        ax1.plot(x, y, z ,alpha=1, color="#0FAD1E")
         ax1.add_collection3d(mesh)
         ax1.set_aspect('equal', 'box') 
         #####################################
-        enr = Calc_Ham(ps.T, omega, mu_I, CM)
-        t = np.linspace(0,ps.shape[0],ps.shape[0])
-        # print(enr)
-        # print(t)
-        # print('####################')
-        #####################
-        #
-        #
-        col = col_ls[(ii * (nH + 1) + jj) % len(col_ls)]
-        ax2.plot(t/day,enr, alpha=1, color=col)
-        ###
-        vel = np.sqrt(ps[:, 3]**2 + ps[:, 4]**2 + ps[:, 5]**2)
-        ax3.plot(t,vel, alpha=1, color='blue',label='Rotating')
-        r = np.sqrt(ps[:, 0]**2 + ps[:, 1]**2 + ps[:, 2]**2)
-        ax4.plot(t, r, alpha=1, color='blue',label='Rotating')
+        # enr = Calc_Ham(ps.T, omega, mu_I, CM)
+        # t = np.linspace(0,ps.shape[0],ps.shape[0])
+        # # print(enr)
+        # # print(t)
+        # # print('####################')
+        # #####################
+        # #
+        # #
+        # col = col_ls[(ii * (nH + 1) + jj) % len(col_ls)]
+        # ax2.plot(t/day,enr, alpha=1, color=col)
+        # ###
+        # vel = np.sqrt(ps[:, 3]**2 + ps[:, 4]**2 + ps[:, 5]**2)
+        # ax3.plot(t,vel, alpha=1, color='blue',label='Rotating')
+        # r = np.sqrt(ps[:, 0]**2 + ps[:, 1]**2 + ps[:, 2]**2)
+        # ax4.plot(t, r, alpha=1, color='blue',label='Rotating')
         ###################################
-        r = np.sqrt(ps[:, 0]**2 + ps[:, 1]**2 + ps[:, 2]**2)
-        r_max = np.max(r)
-        r_min = np.min(r)
-        r_bar = (r_max - r_min)/y[0]
-        if np.isclose(r_bar, 0):
-            e = "Circular"
-        elif r_bar > 1.0:
-            e = "Hyperbolic"
-        else:
-            e = "Elliptical"
-        analysis = f"""
-    {"-"*42}
-    | r_max = {r_max}
-    | r_min = {r_min}
-    | r_bar = {r_bar}
-    | e_apr = {e}
-    |--- Velocity ---
-    | max   = {ps[:,4].max()}  
-    | min   = {ps[:,4].min()}
-    | mean  = {np.mean(ps[:,4])}  +/- {np.std(ps[:,4])}
-    |----------------
-    |
-    {"-"*42}
-        """
-        print(analysis)
+    #     r = np.sqrt(ps[:, 0]**2 + ps[:, 1]**2 + ps[:, 2]**2)
+    #     r_max = np.max(r)
+    #     r_min = np.min(r)
+    #     r_bar = (r_max - r_min)/y[0]
+    #     if np.isclose(r_bar, 0):
+    #         e = "Circular"
+    #     elif r_bar > 1.0:
+    #         e = "Hyperbolic"
+    #     else:
+    #         e = "Elliptical"
+    #     analysis = f"""
+    # {"-"*42}
+    # | r_max = {r_max}
+    # | r_min = {r_min}
+    # | r_bar = {r_bar}
+    # | e_apr = {e}
+    # |--- Velocity ---
+    # | max   = {ps[:,4].max()}  
+    # | min   = {ps[:,4].min()}
+    # | mean  = {np.mean(ps[:,4])}  +/- {np.std(ps[:,4])}
+    # |----------------
+    # |
+    # {"-"*42}
+    #     """
+    #     print(analysis)
 
-        # CHAOS ANALYSIS - NEW ADDITION
-        print(f"\n{'-'*42}")
-        print("CHAOS ANALYSIS")
-        print(f"{'-'*42}")
+    #     # CHAOS ANALYSIS - NEW ADDITION
+    #     print(f"\n{'-'*42}")
+    #     print("CHAOS ANALYSIS")
+    #     print(f"{'-'*42}")
         
-        chaos_summary = LP.analyze_trajectory_for_chaos(ps, 1.0)  # dt = 1.0 second
+    #     chaos_summary = LP.analyze_trajectory_for_chaos(ps, 1.0)  # dt = 1.0 second
         
 
-        state = ps
+    #     state = ps
         ###################################
         # Translate to inertial frame 
         #
@@ -348,14 +336,14 @@ for ii in range(0, nx + 1):
 
             return xf
         
-        inS = rot2fix(state, omega*t)
-        print(inS)
-        vel_in = np.sqrt(inS[:,3]**2 + inS[:,4]**2 + inS[:,5]**2)
-        r_in = np.sqrt(inS[:,0]**2 + inS[:,1]**2 + inS[:,2]**2)
-        print(vel.shape)
-        print(r.shape)
-        ####
-        ax7.plot(inS[:,0], inS[:,1], inS[:,2], alpha=0.5, color='red')
+        # inS = rot2fix(state, omega*t)
+        # print(inS)
+        # vel_in = np.sqrt(inS[:,3]**2 + inS[:,4]**2 + inS[:,5]**2)
+        # r_in = np.sqrt(inS[:,0]**2 + inS[:,1]**2 + inS[:,2]**2)
+        # print(vel.shape)
+        # print(r.shape)
+        # ####
+        # ax7.plot(inS[:,0], inS[:,1], inS[:,2], alpha=0.5, color='red')
 
         ###########
         ###
@@ -367,8 +355,8 @@ for ii in range(0, nx + 1):
 
 
 
-# fig.set_facecolor('#000000')
-# ax.set_facecolor('#000000')
+fig1.set_facecolor('#000000')
+ax1.set_facecolor('#000000')
 # ax.tick_params(axis='x', colors='white')
 # ax.tick_params(axis='y', colors='white')
 

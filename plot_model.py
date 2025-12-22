@@ -67,6 +67,10 @@ ax.set_aspect('equal', 'box')
 # Light mode 
 Background = '#FFFFFF'
 Grid_Color = "#000000"
+plt.rcParams["figure.autolayout"] = True
+plt.rcParams['font.family'] = 'Times New Roman'
+plt.rcParams['font.sans-serif'] = 'Times New Roman'
+plt.rcParams['mathtext.fontset'] = 'cm'
 
 fig.set_facecolor(Background)
 ax.set_facecolor(Background)
@@ -84,8 +88,9 @@ ax.yaxis.line.set_color(Grid_Color)
 ax.zaxis.line.set_color(Grid_Color)
 
 ax.grid(False)
-ax.set_xlabel('X (km)')
-ax.set_ylabel('Y (km)')
-ax.set_zlabel('Z (km)')
+ax.set_xlabel('X (km)', fontsize=24,labelpad=15)
+ax.set_ylabel('Y (km)', fontsize=24,labelpad=15)
+ax.set_zlabel('Z (km)', fontsize=24,labelpad=15)
+ax.tick_params(axis='both', labelsize=24)
 ax.set_aspect('equal', 'box') 
 plt.show()

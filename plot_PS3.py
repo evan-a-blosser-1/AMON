@@ -9,8 +9,8 @@ import sys
 
 # plt.rcParams["figure.figsize"] = [6.5, 6.5]
 plt.rcParams["figure.autolayout"] = True
-# plt.rcParams['font.family'] = 'Times New Roman'
-# plt.rcParams['font.sans-serif'] = 'Times New Roman'
+plt.rcParams['font.family'] = 'Times New Roman'
+plt.rcParams['font.sans-serif'] = 'Times New Roman'
 plt.rcParams['mathtext.fontset'] = 'cm'
 
 # plt.axvline(x = 4.45e-3, color = 'r')
@@ -18,7 +18,7 @@ plt.rcParams['mathtext.fontset'] = 'cm'
 
 
 
-folder   = 'Databank/1950DA_REDO/3e-7/'  
+folder   = 'Databank/1950DA_REDO/4e-7/'  
 
 # srt = 0.8
 # end = 3.0
@@ -32,12 +32,12 @@ for i in np.arange(srt, end, step=0.01):
 # print(exclude_List)
 ######## 1.10
 xi = 0.5
-xf = 3.0
+xf = 20.0
 dx = 0.1
 nx = round((xf - xi)/dx)
 ########################
-Hi = 3.0e-7
-Hf = 3.0e-7
+Hi = 4.0e-7
+Hf = 4.0e-7
 dH = 0.1e-7
 nH = round((Hf - Hi) / dH)
 ########################
@@ -100,24 +100,24 @@ for scatter in scatter_plots:
     
 cbar = plt.colorbar(POINCARE_Sec, orientation='vertical', pad=0.01,aspect=20)
 
-cbar.set_label(r'$H (\frac{km^2}{s^2})$', fontsize=25, labelpad=10)
+cbar.set_label(r'$H (\frac{km^2}{s^2})$', fontsize=35, labelpad=10)
 
 cbar.set_label(r'$y_0 (km)$', fontsize=35, labelpad=10)
 
-cbar.ax.tick_params(labelsize=20) 
-      
+cbar.ax.tick_params(labelsize=30) 
+
       
 plt.xlabel(r'$y$ $(km)$', fontsize=35)
-plt.xticks(fontsize=24)
+plt.xticks(fontsize=30)
 # plt.xlim(-10, 10)
 
 plt.ylabel(r'$\dot{y}$ $(\frac{km}{s})$', fontsize=35)
-plt.yticks(fontsize=24)
+plt.yticks(fontsize=30)
 
 
 # Increase font size of scientific notation on y-axis
 plt.ticklabel_format(style='scientific', axis='y', scilimits=(0,0))
-plt.gca().yaxis.get_offset_text().set_fontsize(14)  # Adjust font size (default is usually 10-12)
+plt.gca().yaxis.get_offset_text().set_fontsize(30)  # Adjust font size (default is usually 10-12)
 
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=3, markerscale=3)
 
