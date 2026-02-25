@@ -253,9 +253,9 @@ for ii in range(0, nx + 1):
 
         # Get last 1000 points
         # [-1000:, 2]
-        x = list(ps[-10000:, 0])
-        y = list(ps[-10000:, 1])
-        z = list(ps[-10000:, 2])
+        x = list(ps[:, 0])
+        y = list(ps[:, 1])
+        z = list(ps[:, 2])
         all_z.extend(z) 
         #####################
         print(f"y0 = {y[0]}")
