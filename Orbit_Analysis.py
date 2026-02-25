@@ -1,13 +1,13 @@
 import os
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection 
-import matplotlib.colors as mcolors
-from matplotlib import cm
-import numpy as np
 import sys
+import numpy as np
+from scipy import fft
+from scipy.signal import windows, find_peaks
 import trimesh
 from numba import njit
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection 
+###
 sys.dont_write_bytecode = True
 import constants as C
 const    = C.constants()
@@ -18,25 +18,26 @@ day = const.day
 asteroid = '1950DA_Prograde'
 target = C.DA1950()
 # 
-folder   = "Databank/1950DA_res/Landing_trj/"
+folder   = "Databank/1950DA_REDO/periodic/"
 ####
 # Set:
 # 0: Bounded motion
 # 1: Collision Or Escape 
 typ_flg = '0'
 ########
-xi = 3.0
-xf = 3.0
+xi = 1.3812
+xf = 1.3812
 dx = 0.01
 nx = round((xf - xi)/dx)
 ########################
-Hi = 2.0e-8
-Hf = 2.0e-8
-dH = 0.1e-8
+Hi = 3.0e-7
+Hf = 3.0e-7
+dH = 0.1e-7
 nH = round((Hf - Hi) / dH)
 #############################################################################
 ################################################ angular velocity calculation
 Spin = target.spin
+print(Spin)
 omega = (2*np.pi)/(Spin * 3600)
 ################################## Define Equations 
 @njit
@@ -176,7 +177,11 @@ ax1.set_xlabel(r'$X$ $(km)$', fontsize=25, labelpad=25)
 ax1.set_ylabel(r'$Y$ $(km)$', fontsize=25, labelpad=25)
 ax1.set_zlabel(r'$Z$ $(km)$', fontsize=25, labelpad=25)
 ax1.tick_params(axis='both', which='major', labelsize=25)
-
+# fig1.set_facecolor('#000000')
+# ax1.set_facecolor('#000000')
+# ax1.tick_params(axis='x', colors='white')
+# ax1.tick_params(axis='y', colors='white')
+#######################
 # fig2 = plt.figure()
 # ax2  = fig2.add_subplot(111)
 # #ax2.set_title('Hamiltonian Energy')
@@ -187,10 +192,18 @@ ax1.tick_params(axis='both', which='major', labelsize=25)
 # # Increase font size of scientific notation on y-axis
 # ax2.ticklabel_format(style='scientific', axis='y', scilimits=(0,0))
 # ax2.yaxis.get_offset_text().set_fontsize(20)  # Fixed: removed gca() and increased font size
-
 # ax2.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=3, markerscale=3)
 
 
+#######################
+fig5 = plt.figure(figsize=(12, 8))
+ax5  = fig5.add_subplot(111)
+ax5.set_xlabel('Frequency (Hz)', fontsize=20)
+ax5.set_ylabel('Power Spectrum', fontsize=20)
+ax5.tick_params(axis='both', which='major', labelsize=18)
+ax5.grid(True, alpha=0.3)
+
+#######################
 # fig3 = plt.figure()
 # ax3  = fig3.add_subplot(111)
 # ax3.set_title(r'Velocity')
@@ -198,25 +211,22 @@ ax1.tick_params(axis='both', which='major', labelsize=25)
 # ax3.set_ylabel(r'Velocity $\frac{km}{s}$')
 
 
+#######################
 # fig4 = plt.figure()
 # ax4  = fig4.add_subplot(111)
 # ax4.set_title(r'Position')
 # ax4.set_xlabel('time (sec)')
 # ax4.set_ylabel(r'Position (km)')
 
-
-
-
-
+#######################
 # fig7 = plt.figure()
 # ax7  = fig7.add_subplot(111, projection='3d')
 # ax7.set_title('Inertial Frame Trajectory')  
 # ax7.set_xlabel('X (km)')
 # ax7.set_ylabel('Y (km)')
 # ax7.set_zlabel('Z (km)')
-
 ########################################################
-####################
+########################################################
 
 for ii in range(0, nx + 1):
     x0 = xi + float(ii)*dx
@@ -259,18 +269,61 @@ for ii in range(0, nx + 1):
         all_z.extend(z) 
         #####################
         print(f"y0 = {y[0]}")
-        #
-        #
+        ##################### 
+        # Plot 3D trajectory with Shape Model
         col = col_ls[(ii * (nH + 1) + jj) % len(col_ls)]
         ax1.plot(x, y, z ,alpha=1, color="#0FAD1E")
         ax1.add_collection3d(mesh)
         ax1.set_aspect('equal', 'box') 
+        ##############################
+        # Frequency Analysis 
+        n = len(ps[:, 0])
+        dt = 1.0  # time step in seconds (adjust if your data has different dt)
+        
+        # Apply Hann window to reduce spectral leakage
+        window = windows.hann(n)
+        fft_x = fft.fft(ps[:, 0] * window)
+        fft_y = fft.fft(ps[:, 1] * window)
+        fft_z = fft.fft(ps[:, 2] * window)
+        
+        # Frequency array
+        freqs = fft.fftfreq(n, dt)
+        
+        # Power spectrum (magnitude squared)
+        power_x = np.abs(fft_x)**2
+        power_y = np.abs(fft_y)**2
+        power_z = np.abs(fft_z)**2
+        power_total = power_x 
+        
+        # Only positive frequencies
+        pos_mask = freqs > 0
+        
+        # Expected orbital frequency
+        orbital_freq = omega / (2 * np.pi)  # Hz
+        
+        # Find peaks in the spectrum
+        if np.max(power_total[pos_mask]) > 0:
+            peaks, _ = find_peaks(power_total[pos_mask], height=np.max(power_total[pos_mask])*0.1)
+            peak_freqs = freqs[pos_mask][peaks]
+            print(f"Peak frequencies: {peak_freqs}")
+            print(f"Expected orbital frequency: {orbital_freq} Hz")
+            print(f"Spin period: {Spin/3600:.2f} hours")
+            
+            # Plot FFT
+            col = col_ls[(ii * (nH + 1) + jj) % len(col_ls)]
+            ax5.loglog(freqs[pos_mask], power_total[pos_mask], alpha=0.7, color=col, linewidth=1.5)
+            
+            # Mark the orbital frequency
+            ax5.axvline(x=orbital_freq, color='red', linestyle='--', linewidth=2, label=f'Spin freq ({orbital_freq:.2e} Hz)')
+            
+            # Mark detected peaks
+            if len(peaks) > 0:
+                ax5.plot(peak_freqs, power_total[pos_mask][peaks], 'ro', markersize=8, label='Detected peaks')
+        
         #####################################
         # enr = Calc_Ham(ps.T, omega, mu_I, CM)
-        # t = np.linspace(0,ps.shape[0],ps.shape[0])
+        #
         # # print(enr)
-        # # print(t)
-        # # print('####################')
         # #####################
         # #
         # #
@@ -279,7 +332,6 @@ for ii in range(0, nx + 1):
         # ###
         # vel = np.sqrt(ps[:, 3]**2 + ps[:, 4]**2 + ps[:, 5]**2)
         # ax3.plot(t,vel, alpha=1, color='blue',label='Rotating')
-        # r = np.sqrt(ps[:, 0]**2 + ps[:, 1]**2 + ps[:, 2]**2)
         # ax4.plot(t, r, alpha=1, color='blue',label='Rotating')
         ###################################
     #     r = np.sqrt(ps[:, 0]**2 + ps[:, 1]**2 + ps[:, 2]**2)
@@ -353,16 +405,16 @@ for ii in range(0, nx + 1):
         ###
         # Poincare(ps.T)
 
-        plt.show()
 
 
 
 
 
-fig1.set_facecolor('#000000')
-ax1.set_facecolor('#000000')
-# ax.tick_params(axis='x', colors='white')
-# ax.tick_params(axis='y', colors='white')
+# Add legend to FFT plot (remove duplicate labels)
+handles, labels = ax5.get_legend_handles_labels()
+by_label = dict(zip(labels, handles))
+ax5.legend(by_label.values(), by_label.keys(), loc='upper right', fontsize=14)
 
-# plt.show()
+plt.show()
+
 # plt.savefig(folder + 'Poincare_Sec.png', dpi=300)
