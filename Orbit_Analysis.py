@@ -1,4 +1,3 @@
-
 import os
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -11,18 +10,20 @@ import trimesh
 from numba import njit
 sys.dont_write_bytecode = True
 import constants as C
-import Lyapunov_Package as LP
 const    = C.constants()
 day = const.day
-###
+############################################################
+############################################# Main Settings
 # Asteroid Name
 asteroid = '1950DA_Prograde'
 target = C.DA1950()
-Spin = target.spin
 # 
-omega = (2*np.pi)/(Spin * 3600)
-
 folder   = "Databank/1950DA_res/Landing_trj/"
+####
+# Set:
+# 0: Bounded motion
+# 1: Collision Or Escape 
+typ_flg = '0'
 ########
 xi = 3.0
 xf = 3.0
@@ -34,7 +35,10 @@ Hf = 2.0e-8
 dH = 0.1e-8
 nH = round((Hf - Hi) / dH)
 #############################################################################
-########################
+################################################ angular velocity calculation
+Spin = target.spin
+omega = (2*np.pi)/(Spin * 3600)
+################################## Define Equations 
 @njit
 def Calc_Ham(state,omega,mu_I,CM):
     U = np.zeros(state.shape[1], dtype="float64")
@@ -229,7 +233,7 @@ for ii in range(0, nx + 1):
         #file = folder + '/' + 'PY-C' + aux1 + 'Yi' + aux2 + '.dat'
         
                 
-        file = folder + '/' + 'TR-S1' +'-H' + aux1 + 'Yi' + aux2 + '.dat'
+        file = folder + '/' + 'TR-S' + typ_flg + '-H' + aux1 + 'Yi' + aux2 + '.dat'
     
     
         print(file)
