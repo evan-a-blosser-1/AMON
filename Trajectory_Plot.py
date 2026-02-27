@@ -18,12 +18,12 @@ day = const.day
 asteroid = '1950DA_Prograde'
 target = C.DA1950()
 # 
-folder   = "Databank/1950DA_res/Landing_trj/"
+folder   = "Databank/1950DA_REDO/landing/"
 ####
 # Set:
 # 0: Bounded motion
 # 1: Collision Or Escape 
-typ_flg = '0'
+typ_flg = '1'
 ########
 xi = 3.0
 xf = 3.0

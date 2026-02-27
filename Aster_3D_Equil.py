@@ -208,7 +208,7 @@ else:
 #################################################
 # Remove duplicate roots
 #
-#   Use trimesh to chekc the values for being in the astoerid 
+#   Use trimesh to check the values for being in the asteroid 
 #    and remove them if they are!
 #
 # find a better way to analyze duplicates
