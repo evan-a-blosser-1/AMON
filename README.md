@@ -13,10 +13,10 @@ This software was constructed as the main simulation for my thesis entitled DYNA
   - `Plot_(...).py` or `(...)_Plot.py`; are codes to plot results. This includes
       1. Hyperplane represented
       2. Survival map
-      3. Trejectory
-      4. Poincare\'
+      3. Trajectory
+      4. Poincaré surface of sections
       5. MASCON Model
-**All ramiaing files are either worksapces (that may be removed later for cleaning) or the MASCON model files themselves.
+**All remaining files are either workspaces (that may be removed later for cleaning) or the MASCON model files themselves.
 
 # Dedication of this Project & Thesis
 ![](Dedication_To_Loki.png)
