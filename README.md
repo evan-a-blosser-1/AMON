@@ -19,4 +19,4 @@ This software was constructed as the main simulation for my thesis entitled DYNA
 **All ramiaing files are either worksapces (that may be removed later for cleaning) or the MASCON model files themselves.
 
 # Dedication of this Project & Thesis
-
+![](Dedication_To_Loki.png)
