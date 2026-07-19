@@ -14,7 +14,7 @@ This software was constructed as the main simulation for my thesis entitled DYNA
       1. Hyperplane represented
       2. Survival map
       3. Trejectory
-      4. Poincar'e
+      4. Poincare\'
       5. MASCON Model
 **All ramiaing files are either worksapces (that may be removed later for cleaning) or the MASCON model files themselves.
 
