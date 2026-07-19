@@ -1,8 +1,6 @@
 # AMON: Asteroid MASCON OCSER N-body
 
-This software was constructed as the main simulation for my thesis entitled DYNAMICS OF A SMALL BODY AROUND ASTEROID (29075) 1950DA, which can be downloaded or viewed from the following links:
-
-**VIEW:** []()
+This software was constructed as the main simulation for my thesis entitled DYNAMICS OF A SMALL BODY AROUND ASTEROID (29075) 1950DA, which can be downloaded from the following link:
 
 **Download:** [https://shareok.org/items/980dc813-e5c5-49f2-8b71-2886cede58dd/full](https://shareok.org/items/980dc813-e5c5-49f2-8b71-2886cede58dd/full)
 
@@ -19,3 +17,6 @@ This software was constructed as the main simulation for my thesis entitled DYNA
       4. Poincar'e
       5. MASCON Model
 **All ramiaing files are either worksapces (that may be removed later for cleaning) or the MASCON model files themselves.
+
+# Dedication of this Project & Thesis
+
